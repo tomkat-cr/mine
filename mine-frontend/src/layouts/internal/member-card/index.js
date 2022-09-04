@@ -20,7 +20,8 @@ import { AiFillTwitterCircle } from "react-icons/ai";
           borderRadius="lg"
           w={{ sm: '100%', md: '540px' }}
           height={{ sm: '476px', md: '20rem' }}
-          direction={{ base: 'column', md: 'row' }}
+          wrap={{base: 'wrap', md: 'nowrap'}}
+          direction={{ base: 'row', md: 'row' }}
           bg={useColorModeValue('white', 'gray.900')}
           boxShadow={'2xl'}
           padding={4}>
@@ -38,7 +39,7 @@ import { AiFillTwitterCircle } from "react-icons/ai";
             alignItems="center"
             p={1}
             pt={2}>
-            <Heading fontSize={'2xl'} fontFamily={'body'}>
+            <Heading fontSize={'2xl'} textAlign={'center'} fontFamily={'body'}>
               {name}
             </Heading>
             <Badge colorScheme={'blue'}>

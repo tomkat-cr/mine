@@ -7,14 +7,16 @@ import {
     Flex,
     Text,
     Stack,
-    Button,
     useColorModeValue,
     Divider,
   } from '@chakra-ui/react';
   import { FaEthereum } from 'react-icons/fa';
+import useWalletData from '../../hooks/useWalletData';
 import ProductAddToCart from '../../layouts/internal/card';
+import { ButtonConnection } from '../../layouts/internal/wallet';
   
   export default function Profile() {
+    const {address, network, unsupportedChain, connect, disconnect, active, balance} = useWalletData()
     return (
     <Box minH={'100vh'}>
 
@@ -32,7 +34,7 @@ import ProductAddToCart from '../../layouts/internal/card';
             <Avatar
               size={'xl'}
               src={
-                'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&ixid=eyJhcHBfaWQiOjE3Nzg0fQ'
+                'https://cdn-icons-png.flaticon.com/512/149/149071.png'
               }
               alt={'Author'}
               css={{
@@ -44,12 +46,12 @@ import ProductAddToCart from '../../layouts/internal/card';
           <Box p={6}>
             <Stack spacing={0} align={'center'} mb={5}>
               <Heading fontSize={'2xl'} fontWeight={500} fontFamily={'body'}>
-                0xAEB...E251
+                {address}
               </Heading>
-              <Text color={'gray.500'}>Tesnet Network</Text>
+              <Text color={'gray.500'}>{network}</Text>
             </Stack>
   
-            <Stack direction={'row'} justify={'center'} spacing={6}>
+            <Stack direction={'row'} justify={'center'} mb={4} spacing={6}>
               <Stack spacing={0} align={'center'}>
                 <Text fontWeight={600}>10</Text>
                 <Text fontSize={'sm'} color={'gray.500'}>
@@ -57,14 +59,16 @@ import ProductAddToCart from '../../layouts/internal/card';
                 </Text>
               </Stack>
               <Stack spacing={0} align={'center'}>
-                <Text fontWeight={600}><Icon as={FaEthereum} boxSize={3}/>17</Text>
+                <Text fontWeight={600}><Icon as={FaEthereum} boxSize={3}/>{balance}</Text>
                 <Text fontSize={'sm'} color={'gray.500'}>
                   Saldo
                 </Text>
               </Stack>
             </Stack>
-  
-            <Button w={'100%'} size={'md'} mt={8} colorScheme='red' variant='outline'>Desconectar wallet</Button>
+            { active ?
+                  <ButtonConnection connect={disconnect} active={active} unsupportedChain={unsupportedChain}/>
+                  : <ButtonConnection connect={connect} active={active} unsupportedChain={unsupportedChain}/>
+              }
           </Box>
         </Box>
       </Center>
