@@ -132,9 +132,16 @@ describe("Mine Contract", () => {
 			const events = await safeMint();
 			const tokenId = events.events[1].args[0];
 			await mine.connect(certifier).certify(tokenId, "new_metadata");
-			const result = await mine.connect(buyerUser).buyProduct(tokenId, ONE_MWEI, {value: ONE_ETHER});
-			console.log(result);
-			expect(result).to.equal(true);
+
+			const beforeBalance = await ethers.provider.getBalance(sellerUser.address);
+
+			const tx = await mine.connect(buyerUser).buyProduct(tokenId, ONE_MWEI, {value: ONE_ETHER});
+			await tx.wait();
+			const afterBalance = await ethers.provider.getBalance(sellerUser.address);
+			const ownerOfNFT = await mine.connect(certifier).ownerOf(tokenId);
+			expect(afterBalance).to.be.greaterThan(beforeBalance);
+			expect(ownerOfNFT).to.be.equal(buyerUser.address);
+			// TODO add validation of fees
 		});
 	});
 
