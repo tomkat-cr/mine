@@ -29,21 +29,20 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
 
     mapping (address => string) public certifiers;
     mapping (address => bool) public reviewedCertifiers;
+    mapping (address => string) public users;
     mapping (uint256 => uint256) public productsPrice;
+    mapping (uint256 => bool) public productsVerified;
     mapping (address => bool) public bannedUsers;
     mapping (FeeType => uint256) public fees;
     mapping (uint256 => address) public tokenIdToUser;
 
-    /*
-    fees[Certifier_Registration] = 1;   // Fixed amount Gwei
-    fees[User_Registration] = 0;        // Fixed amount Gwei
-    fees[Product_Registration] = 1;     // Fixed amount Gwei
-    fees[Product_Transfer] = 1;         // Percentage
-    */
-
     constructor() ERC721(CONTRACT_NAME, CONTRACT_SYMBOL) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         contractOwner = payable(msg.sender);
+        fees[FeeType.Certifier_Registration] = 1 gwei;   // Fixed amount Gwei
+        fees[FeeType.User_Registration] = 0 gwei;        // Fixed amount Gwei
+        fees[FeeType.Product_Registration] = 1 gwei;     // Fixed amount Gwei
+        fees[FeeType.Product_Transfer] = 1 gwei;         // Percentage
     }
 
     // Contract functions
@@ -55,6 +54,8 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
     // NFT functions
 
     function safeMint(address _to, string memory _metadataUrl, uint256 _price) public payable {
+        require(hasRole(USER_ROLE, msg.sender), "You should be registered");
+        require(msg.value == fees[FeeType.Product_Registration], "Value amount is different than the product's registration fee.");
         contractOwner.transfer(fees[FeeType.Product_Registration]);
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -105,15 +106,23 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
 
     // Buyer functions
 
+    function registerUser(string memory metadataURL) public {
+        require(!hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Admin cannot be an user.");
+        require(!hasRole(CERTIFIER_ROLE, msg.sender), "Certifier cannot be an user.");
+        _grantRole(USER_ROLE, msg.sender);
+        users[msg.sender] = metadataURL;
+    }
+
     function buyProduct(uint256 _tokenId, uint256 _gofPortion) public payable {
         require(_tokenId < _tokenIdCounter.current(), "Invalid tokenId.");
         require(hasRole(USER_ROLE, msg.sender), "You should be an user to buy this product.");
         require(_isApprovedOrOwner(_tokenId) != msg.sender, "You cannot buy your own products.");
-        require(productPrice(_tokenId) != msg.value, "Transaction amount should be the same as the product price.");
+        require(productPrice(_tokenId) == msg.value, "Transaction amount should be the same as the product price.");
 
         // uint256 _gofPortion = msg.value * fees[FeeType.Product_Transfer] / 100;
         contractOwner.transfer(_gofPortion);
         payable(_isApprovedOrOwner(_tokenId)).transfer(msg.value - _gofPortion);
+        account.safeTransferFrom(msg.sender, to, tokenId);
         // Token transference missing maybe we could find something in:
         // https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/ERC721Tradable.sol
     }
@@ -123,7 +132,7 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
     } */
 
     function _isApprovedOrOwner(uint256 _tokenId) internal view virtual returns (address) {
-        require(tokenIdToUser[_tokenId] == address(0x0), "TokenId doesn't exist.");
+        require(tokenIdToUser[_tokenId] != address(0x0), "TokenId doesn't exist.");
         // address owner = ERC721.ownerOf(tokenId);
         // return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
         return tokenIdToUser[_tokenId];
@@ -137,17 +146,19 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
 
     function certify(uint256 _tokenId, string memory _newMetadata) onlyRole(CERTIFIER_ROLE) public {
         updateMetadataURL(_tokenId, _newMetadata);
+        productsVerified[_tokenId] = true;
     }
 
     function registerAsCertifier(string memory _certifierDataURL) public payable {
         require(msg.value == fees[FeeType.Certifier_Registration], "Value amount is different than the certifier's registration fee.");
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Admin cannot be a certifier.");
-        require(hasRole(USER_ROLE, msg.sender), "Users cannot be a certifier.");
+        require(!hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Admin cannot be a certifier.");
+        require(!hasRole(USER_ROLE, msg.sender), "Users cannot be a certifier.");
         certifiers[msg.sender] = _certifierDataURL;
         reviewedCertifiers[msg.sender] = false;
         contractOwner.transfer(msg.value);
         // New certifier must be reviewed by GOF, then GOF will call addCertifier()
     }
+
 
     function acceptCertifier(address _account) onlyRole(DEFAULT_ADMIN_ROLE) public {
         _grantRole(CERTIFIER_ROLE, _account);
