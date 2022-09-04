@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import useWalletData from "./hooks/useWalletData";
 import InternalLayout from "./layouts/internal";
 import AboutUs from "./views/about-us";
+import Certifier from "./views/certifier";
 import Home from "./views/home";
 import NotFound from "./views/not-found";
 import Product from "./views/product";
@@ -21,6 +22,7 @@ function App() {
         <Route path="/acerca-de-nosotros" element={<AboutUs/>}/>
         <Route path="/bienes" element={<Products/>}/>
         <Route path="/product" element={<Product/>}/>
+        <Route path="/certifier" element={<Certifier/>}/>
         <Route path="/" element={<Home/>}/>
         <Route path="*" element={<NotFound/>}/>
       </Routes>

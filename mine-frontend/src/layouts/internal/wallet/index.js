@@ -72,6 +72,7 @@ function Wallet() {
                     </MenuItem>
                     <MenuDivider/>
                     <MenuItem as={Link} to={'/profile'}>Mis bienes</MenuItem>
+                    <MenuItem as={Link} to={'/certifier'}>Soy perito</MenuItem>
                     </>
                 )}
                 
