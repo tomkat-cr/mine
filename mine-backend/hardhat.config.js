@@ -2,7 +2,7 @@ require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config()
 
 const DEPLOYER_SIGNER_PRIVATE_KEY= process.env.DEPLOYER_SIGNER_PRIVATE_KEY;
-const ALCHEMY_PROJECT_ID_API_KEY= process.env.ALCHEMY_PROJECT_ID_API_KEY;
+const INFURA_PROJECT_ID_API_KEY= process.env.INFURA_PROJECT_ID_API_KEY;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -13,7 +13,7 @@ module.exports = {
     },
     rinkeby: {
       // Target URL when Hardhat deploy the Smart Contract
-      url: `https://rinkeby.infura.io/v3/${ALCHEMY_PROJECT_ID_API_KEY}`,
+      url: `https://rinkeby.infura.io/v3/${INFURA_PROJECT_ID_API_KEY}`,
       // Indicates which account will sign the transaction
       accounts: [
         DEPLOYER_SIGNER_PRIVATE_KEY
@@ -21,7 +21,7 @@ module.exports = {
     },
     ropsten: {
       // Target URL when Hardhat deploy the Smart Contract
-      url: `https://ropsten.infura.io/v3/${ALCHEMY_PROJECT_ID_API_KEY}`,
+      url: `https://ropsten.infura.io/v3/${INFURA_PROJECT_ID_API_KEY}`,
       // Indicates which account will sign the transaction
       accounts: [
         DEPLOYER_SIGNER_PRIVATE_KEY
@@ -29,7 +29,7 @@ module.exports = {
     },
     goerli: {
       // Target URL when Hardhat deploy the Smart Contract
-      url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_PROJECT_ID_API_KEY}`,
+      url: `https://eth-goerli.g.infura.com/v2/${INFURA_PROJECT_ID_API_KEY}`,
       // Indicates which account will sign the transaction
       accounts: [
         DEPLOYER_SIGNER_PRIVATE_KEY
@@ -37,7 +37,7 @@ module.exports = {
     },
     kovan: {
       // Target URL when Hardhat deploy the Smart Contract
-      url: `https://kovan.infura.io/v3/${ALCHEMY_PROJECT_ID_API_KEY}`,
+      url: `https://kovan.infura.io/v3/${INFURA_PROJECT_ID_API_KEY}`,
       // Indicates which account will sign the transaction
       accounts: [
         DEPLOYER_SIGNER_PRIVATE_KEY
@@ -45,7 +45,7 @@ module.exports = {
     },
     sepolia: {
       // Target URL when Hardhat deploy the Smart Contract
-      url: `https://sepolia.infura.io/v3/${ALCHEMY_PROJECT_ID_API_KEY}`,
+      url: `https://sepolia.infura.io/v3/${INFURA_PROJECT_ID_API_KEY}`,
       // Indicates which account will sign the transaction
       accounts: [
         DEPLOYER_SIGNER_PRIVATE_KEY
