@@ -12,7 +12,9 @@ describe("Mine Contract", () => {
 	let DEFAULT_ADMIN_ROLE;
 	let CERTIFIER_ROLE;
 	let USER_ROLE;
+	const ONE_MWEI = 1_000_000;
 	const ONE_GWEI = 1_000_000_000;
+	const ONE_ETHER = ethers.utils.parseEther("1");
 
 	beforeEach(async () => {
 		Mine = await ethers.getContractFactory("Mine");
@@ -23,10 +25,10 @@ describe("Mine Contract", () => {
 		USER_ROLE = await mine.USER_ROLE();
 	});
 
-	async function registerUser() {
+	async function registerUser(user) {
 		const userMetadataUrl = "url_metadata";
-		await mine.connect(sellerUser).registerUser(userMetadataUrl);
-		const newUserRegistered = await mine.connect(sellerUser).users(sellerUser.address);
+		await mine.connect(user).registerUser(userMetadataUrl);
+		const newUserRegistered = await mine.connect(user).users(user.address);
 		return newUserRegistered;
 	}
 
@@ -40,7 +42,7 @@ describe("Mine Contract", () => {
 	async function safeMint() {
 		const to = sellerUser.address;
 		const metadataUrl = "metadata";
-		const price = 10000;
+		const price = ONE_ETHER;
 		const tx = await mine.connect(admin).safeMint(to, metadataUrl, price, {value: ONE_GWEI});
 		const events = await tx.wait();
 		return events;
@@ -105,14 +107,14 @@ describe("Mine Contract", () => {
 	describe("Register user", () => {
 		it("Register a new user(seller/buyer)", async () => {
 			const userMetadataUrl = "url_metadata";
-			const newUserRegistered = await registerUser();
+			const newUserRegistered = await registerUser(sellerUser);
 			expect(newUserRegistered).to.equal(userMetadataUrl);
 		});
 	});
 
 	describe("Certify", () => {
 		it("Certify NFT", async () => {
-			await registerUser();
+			await registerUser(sellerUser);
 			await registerCertifier();
 			const events = await safeMint();
 			const tokenId = events.events[1].args[0];
@@ -121,4 +123,19 @@ describe("Mine Contract", () => {
 			expect(result).to.equal(true);
 		});
 	});
+	
+	describe("Transfer NFT", () => {
+		it("Buy product", async () => {
+			await registerUser(sellerUser);
+			await registerUser(buyerUser);
+			await registerCertifier();
+			const events = await safeMint();
+			const tokenId = events.events[1].args[0];
+			await mine.connect(certifier).certify(tokenId, "new_metadata");
+			const result = await mine.connect(buyerUser).buyProduct(tokenId, ONE_MWEI, {value: ONE_ETHER});
+			console.log(result);
+			expect(result).to.equal(true);
+		});
+	});
+
 });
