@@ -20,6 +20,8 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
     bytes32 public constant CERTIFIER_ROLE = keccak256("CERTIFIER_ROLE");
     bytes32 public constant USER_ROLE = keccak256("USER_ROLE");
 
+    event NotificationMintedToken(uint256 tokenId, string metadata, address to, uint256 price);
+
     enum FeeType {
         Certifier_Registration,     // 0
         User_Registration,          // 1 (Javier: Aun no se por que el user se registraria)
@@ -61,6 +63,7 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
         _safeMint(_to, tokenId);
         _setTokenURI(tokenId, _metadataUrl);
         productsPrice[tokenId] = _price;
+        emit NotificationMintedToken(tokenId, _metadataUrl, _to, _price);
     }
 
     function updateMetadataURL(uint256 _tokenId, string memory _metadataUrl) public {

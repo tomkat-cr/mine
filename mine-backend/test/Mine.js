@@ -12,6 +12,7 @@ describe("Mine Contract", () => {
 	let DEFAULT_ADMIN_ROLE;
 	let CERTIFIER_ROLE;
 	let USER_ROLE;
+	const ONE_GWEI = 1_000_000_000;
 
 	beforeEach(async () => {
 		Mine = await ethers.getContractFactory("Mine");
@@ -21,6 +22,29 @@ describe("Mine Contract", () => {
 		CERTIFIER_ROLE = await mine.CERTIFIER_ROLE();
 		USER_ROLE = await mine.USER_ROLE();
 	});
+
+	async function registerUser() {
+		const userMetadataUrl = "url_metadata";
+		await mine.connect(sellerUser).registerUser(userMetadataUrl);
+		const newUserRegistered = await mine.connect(sellerUser).users(sellerUser.address);
+		return newUserRegistered;
+	}
+
+	async function registerCertifier() {
+		const certifierMetadataUrl = "url_metadata";
+		await mine.connect(certifier).registerAsCertifier(certifierMetadataUrl, {value: ONE_GWEI});
+		await mine.connect(certifier).certifiers(certifier.address);
+		await mine.connect(admin).acceptCertifier(certifier.address);
+	}
+
+	async function safeMint() {
+		const to = sellerUser.address;
+		const metadataUrl = "metadata";
+		const price = 10000;
+		const tx = await mine.connect(admin).safeMint(to, metadataUrl, price, {value: ONE_GWEI});
+		const events = await tx.wait();
+		return events;
+	}
 
 	describe("Role Assignments", () => {
 		it("ADMIN can add Role to a Certifier", async () => {
@@ -75,6 +99,26 @@ describe("Mine Contract", () => {
 		it("Returns Mine version", async () => {
 			const version = await mine.connect(admin).getContractVersion();
 			expect(version).to.equal("0.0.1");
+		});
+	});
+
+	describe("Register user", () => {
+		it("Register a new user(seller/buyer)", async () => {
+			const userMetadataUrl = "url_metadata";
+			const newUserRegistered = await registerUser();
+			expect(newUserRegistered).to.equal(userMetadataUrl);
+		});
+	});
+
+	describe("Certify", () => {
+		it("Certify NFT", async () => {
+			await registerUser();
+			await registerCertifier();
+			const events = await safeMint();
+			const tokenId = events.events[1].args[0];
+			await mine.connect(certifier).certify(tokenId, "new_metadata");
+			const result = await mine.connect(certifier).productsVerified(tokenId);
+			expect(result).to.equal(true);
 		});
 	});
 });
