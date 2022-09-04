@@ -11,6 +11,7 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;
+    address payable contractOwner;
 
     string public constant CONTRACT_NAME = "Mine";
     string public constant CONTRACT_SYMBOL = "MINE";
@@ -21,7 +22,7 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
 
     enum FeeType {
         Certifier_Registration,     // 0
-        User_Registration,          // 1
+        User_Registration,          // 1 (Javier: Aun no se por que el user se registraria)
         Product_Registration,       // 2
         Product_Transfer            // 3
     }
@@ -33,9 +34,11 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
 
     constructor() ERC721(CONTRACT_NAME, CONTRACT_SYMBOL) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        contractOwner = payable(msg.sender);
     }
 
-    function safeMint(address to, string memory metadata_url, uint256 price) public {
+    function safeMint(address to, string memory metadata_url, uint256 price) public payable {
+        contractOwner.transfer(fees[FeeType.Product_Registration]);
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
@@ -87,13 +90,15 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
 
     // BUYER STUFF
 
-    function BuyProduct(uint256 _tokenId) public payable {
-        require(!hasRole(DEFAULT_ADMIN_ROLE, msg.sender, "No puedes comprar siendo Admin"));
-        require(!hasRole(CERTIFIER_ROLE, msg.sender, "No puedes comprar siendo Certifier"));
+    function buyProduct(uint256 _tokenId) public payable {
+        require(!hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "No puedes comprar siendo Admin");
+        require(!hasRole(CERTIFIER_ROLE, msg.sender), "No puedes comprar siendo Certifier");
 
-        // Token transference missing
-
-        ownerOf(_tokenId).transfer(msg.value);
+        uint256 gofPortion = msg.value * fees[FeeType.Product_Transfer] / 100;
+        contractOwner.transfer(gofPortion);
+        payable(ownerOf(_tokenId)).transfer(msg.value - gofPortion);
+        // Token transference missing maybe we could find something in:
+        // https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/ERC721Tradable.sol
     }
 
     // CERTIFIER STUFF
@@ -102,12 +107,12 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
         updateMetadataURL(_tokenId, newMetadata);
     }
 
-    // function registerAsCertifier(string memory certifierDataURL) public {
-    //     require(msg.value == getAmountToPay(fees[FeeType.Certifier_Registration]), "Hermano paga lo que es");
-    //     require(!hasRole(DEFAULT_ADMIN_ROLE), "Admin cannot be certifier");
-    //     certifiers[msg.sender] = certifierDataURL;
-    //     owner.transfer(msg.value);
-    // }
+    function registerAsCertifier(string memory certifierDataURL) public payable {
+        require(msg.value == fees[FeeType.Certifier_Registration], "Hermano paga lo que es");
+        require(!hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Admin cannot be certifier");
+        certifiers[msg.sender] = certifierDataURL;
+        contractOwner.transfer(msg.value);
+    }
 
     function addCertifier(address _account) onlyRole(DEFAULT_ADMIN_ROLE) public {
         _grantRole(CERTIFIER_ROLE, _account);
