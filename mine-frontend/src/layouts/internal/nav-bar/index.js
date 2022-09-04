@@ -10,8 +10,17 @@ import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import NavLink from '../nav-link';
 import Wallet from '../wallet';
 import Logo from '../../../assets/logo';
+import { useWeb3React } from '@web3-react/core';
+import { Link } from 'react-router-dom';
 
-const Links = [
+
+
+
+export default function NavBar() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { active } = useWeb3React();
+
+  const Links = active ? [
     {
         title: 'Inicio',
         path: '/'
@@ -21,15 +30,20 @@ const Links = [
         path: '/bienes'
     },
     {
-        title: 'Acerca de nosotros',
-        path: '/acerca-de-nosotros'
+      title: 'Acerca de nosotros',
+      path: '/acerca-de-nosotros'
     }
-]
-
-
-
-export default function NavBar() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+    
+  ] : [
+    {
+      title: 'Inicio',
+      path: '/'
+    },
+    {
+      title: 'Acerca de nosotros',
+      path: '/acerca-de-nosotros'
+    }
+  ]
 
   return (
     <>
@@ -44,22 +58,21 @@ export default function NavBar() {
             bg={'transparent'}
           />
           <HStack spacing={8} alignItems={'center'}>
-            <Box><Logo /></Box>
+            <Box><Link to="/"><Logo /></Link></Box>
           </HStack>
 
 
           <HStack spacing={6}>
 
-          
-          <HStack
-              as={'nav'}
-              spacing={4}
-              display={{ base: 'none', md: 'flex' }}>
-              {Links.map((link) => (
-                <NavLink key={link.title} to={link.path}>{link.title}</NavLink>
-              ))}
-                
-            </HStack>
+              <HStack
+                as={'nav'}
+                spacing={4}
+                display={{ base: 'none', md: 'flex' }}>
+                  {Links.map((link) => (
+                    <NavLink key={link.title} to={link.path}>{link.title}</NavLink>
+                  ))}
+                  
+              </HStack>
             <Wallet/>
             </HStack>
           

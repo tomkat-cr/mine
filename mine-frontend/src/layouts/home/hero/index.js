@@ -6,15 +6,17 @@ import {
     Heading,
     Text,
     Button,
-    Image,
     Icon,
     useColorModeValue,
   } from '@chakra-ui/react';
-import Blockchain from '../../../assets/hero-illustration/blockchain.png';
+import { Link } from 'react-router-dom';
+import BlockChain from '../../../assets/hero-illustration/blockchain';
+import useWalletData from '../../../hooks/useWalletData';
   
   export default function Hero() {
+    const {active, unsupportedChain} = useWalletData()
     return (
-      <Container maxW={'7xl'}>
+      <Container maxW={'7xl'} mb={'10em'}>
         <Stack
           align={'center'}
           spacing={{ base: 8, md: 10 }}
@@ -57,11 +59,14 @@ import Blockchain from '../../../assets/hero-illustration/blockchain.png';
                 rounded={'full'}
                 size={'lg'}
                 fontWeight={'normal'}
+                as={Link}
+                to={(active ? "/bienes" : "/")}
                 px={6}
-                colorScheme={'blue'}
+                colorScheme={(active ? 'blue' : 'gray')}
                 bg={'blue.400'}
+                disabled={unsupportedChain || !active}
                 _hover={{ bg: 'blue.500' }}>
-                Comenzar
+                {active ? 'Comenzar' : 'Conecta tu wallet'}
               </Button>
             </Stack>
           </Stack>
@@ -84,15 +89,7 @@ import Blockchain from '../../../assets/hero-illustration/blockchain.png';
             <Box
               position={'relative'}
               width={'full'}>
-                <Image
-              alt={'Hero Image'}
-              fit={'cover'}
-              align={'center'}
-              w={'100%'}
-              h={'100%'}
-              src={Blockchain}
-            />
-
+                <BlockChain/>
             </Box>
           </Flex>
         </Stack>

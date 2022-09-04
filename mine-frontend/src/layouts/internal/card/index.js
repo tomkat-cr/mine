@@ -63,8 +63,7 @@ import { FaEthereum } from 'react-icons/fa';
                     fontWeight="semibold"
                     as="h4"
                     lineHeight="tight"
-                    mb={2}
-                    isTruncated>
+                    mb={2}>
                     {data.name}
                 </Box>
                 <Box fontSize="2xl" color={'gray.800'}>

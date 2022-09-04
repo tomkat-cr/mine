@@ -1,0 +1,15 @@
+path[fill="#60DA9A"],
+path[fill="#74FCBF"] {
+    animation: bright 2s linear 0s infinite;
+}
+@keyframes bright {
+    0% {
+        filter:brightness(1)
+    }
+    50% {
+        filter: brightness(1.1)
+    }
+    100% {
+        filter:brightness(1)
+    }
+}
