@@ -34,7 +34,6 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
     mapping (uint256 => bool) public productsVerified;
     mapping (address => bool) public bannedUsers;
     mapping (FeeType => uint256) public fees;
-    mapping (uint256 => address) public tokenIdToUser;
 
     constructor() ERC721(CONTRACT_NAME, CONTRACT_SYMBOL) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -54,7 +53,7 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
     // NFT functions
 
     function safeMint(address _to, string memory _metadataUrl, uint256 _price) public payable {
-        require(hasRole(USER_ROLE, msg.sender), "You should be registered");
+        require(hasRole(USER_ROLE, _to), "You should be registered");
         require(msg.value == fees[FeeType.Product_Registration], "Value amount is different than the product's registration fee.");
         contractOwner.transfer(fees[FeeType.Product_Registration]);
         uint256 tokenId = _tokenIdCounter.current();
@@ -62,7 +61,6 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
         _safeMint(_to, tokenId);
         _setTokenURI(tokenId, _metadataUrl);
         productsPrice[tokenId] = _price;
-        tokenIdToUser[tokenId] = msg.sender;
     }
 
     function updateMetadataURL(uint256 _tokenId, string memory _metadataUrl) public {
@@ -116,26 +114,22 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
     function buyProduct(uint256 _tokenId, uint256 _gofPortion) public payable {
         require(_tokenId < _tokenIdCounter.current(), "Invalid tokenId.");
         require(hasRole(USER_ROLE, msg.sender), "You should be an user to buy this product.");
-        require(_isApprovedOrOwner(_tokenId) != msg.sender, "You cannot buy your own products.");
+        require(ownerOf(_tokenId) != msg.sender, "You cannot buy your own products.");
         require(productPrice(_tokenId) == msg.value, "Transaction amount should be the same as the product price.");
+        require(_gofPortion < msg.value, "Fee could not be more than the transact value");
 
-        // uint256 _gofPortion = msg.value * fees[FeeType.Product_Transfer] / 100;
+        // Fee
         contractOwner.transfer(_gofPortion);
-        payable(_isApprovedOrOwner(_tokenId)).transfer(msg.value - _gofPortion);
-        account.safeTransferFrom(msg.sender, to, tokenId);
+        // uint256 _gofPortion = msg.value * fees[FeeType.Product_Transfer] / 100;
+        
+        // Transaction payment from the buyer to the previous NFT owner
+        payable(ownerOf(_tokenId)).transfer(msg.value - _gofPortion);
+        
+        // NFT ownership transfer
+        safeTransferFrom(ownerOf(_tokenId), msg.sender, _tokenId);
+
         // Token transference missing maybe we could find something in:
         // https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/ERC721Tradable.sol
-    }
-
-    /* function ownerOf(uint256 _tokenId) private pure  returns (address) {
-        return tokenIdToUser[_tokenId];
-    } */
-
-    function _isApprovedOrOwner(uint256 _tokenId) internal view virtual returns (address) {
-        require(tokenIdToUser[_tokenId] != address(0x0), "TokenId doesn't exist.");
-        // address owner = ERC721.ownerOf(tokenId);
-        // return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
-        return tokenIdToUser[_tokenId];
     }
 
     function productPrice(uint256 _tokenId) private view returns (uint256) {
