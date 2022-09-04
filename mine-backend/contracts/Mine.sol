@@ -129,7 +129,7 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
         payable(ownerOf(_tokenId)).transfer(msg.value - _gofPortion);
         
         // NFT ownership transfer
-        safeTransferFrom(ownerOf(_tokenId), msg.sender, _tokenId);
+        _transfer(ownerOf(_tokenId), msg.sender, _tokenId);
 
         // Token transference missing maybe we could find something in:
         // https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/ERC721Tradable.sol
