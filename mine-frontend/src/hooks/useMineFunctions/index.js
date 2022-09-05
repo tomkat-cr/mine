@@ -2,6 +2,7 @@ import { useWeb3React } from "@web3-react/core";
 import { useCallback } from "react";
 import useMine from "../useMine";
 import axios from 'axios'
+import { ipfsPublicURL } from "../../config/ipfs";
 
 const USERS_TYPES = ['admin', 'certifier', 'user']
 
@@ -31,9 +32,9 @@ const useMineFunctions = () => {
 
     const isCertifier = useCallback(async () => {
         if (mine) {
-          return await mine.methods.hasRole(library.utils.asciiToHex("USER_ROLE"), account).call()
+          return await mine.methods.hasRole("0x65cb1d8422cdf0328f26b49e42e9f4524474c431da623cbe0ea455f1b67c9f77", account).call()
         }
-    }, [account, mine, library?.utils])
+    }, [account, mine])
 
     const isAdmin = useCallback(async () => {
         if (mine) {
@@ -43,9 +44,9 @@ const useMineFunctions = () => {
 
     const isUser = useCallback(async () => {
         if (mine) {
-          return await mine.methods.hasRole(library.utils.asciiToHex("USER_ROLE"), account).call()
+          return await mine.methods.hasRole("0x14823911f2da1b49f045a0929a60b8c1f2a7fc8c06c7284ca3e8ab4e193a08c8", account).call()
         }
-    }, [account, mine, library?.utils])
+    }, [account, mine])
 
     const guessUserType = useCallback(async () => {
         if (mine) {
@@ -57,12 +58,13 @@ const useMineFunctions = () => {
 
 
     const getCertifier = useCallback(async (account) => {
-      if (mine) {
-        const metadataURL = await mine.methods.certifiers(account).call()
-        const data = await axios.get(metadataURL).then(response => response.data)
-        return data
-      }
-  }, [mine])
+        if (mine) {
+          const metadataURL = await mine.methods.certifiers(account).call()
+          // TODO ELiminar replace de la metadata
+          const data = await axios.get(`${ipfsPublicURL}/${new URL(metadataURL).pathname.split("/")[2]}`).then(response => response.data)
+          return data
+        }
+    }, [mine])
 
     const registerAsCertifier = useCallback(async (metadata) => {
         if (mine) {
@@ -95,6 +97,26 @@ const useMineFunctions = () => {
     const currentAccountIsCertifierAccepted = useCallback(async () => {
       return isCertifierAccepted(account)
     }, [isCertifierAccepted, account])
+
+    const registerAsUser = useCallback(async (metadata) => {
+        if (mine) {
+          const fee = await getFee(FEE_TYPES.findIndex(type => type === 'User_Registration'))
+          return await mine.methods.registerUser(metadata).send({
+            from: account,
+            value: fee
+          })
+        }
+    }, [account, mine, getFee])
+
+    const getUser = useCallback(async (account) => {
+      if (mine) {
+        const metadataURL = await mine.methods.users(account).call()
+        // TODO ELiminar replace de la metadata
+        const data = await axios.get(`${ipfsPublicURL}/${new URL(metadataURL).pathname.split("/")[2]}`).then(response => response.data)
+        return data
+      }
+  }, [mine])
+
   
     return {
       getFee,
@@ -108,7 +130,9 @@ const useMineFunctions = () => {
       acceptCertifier,
       removeCertifier,
       isCertifierAccepted,
-      currentAccountIsCertifierAccepted
+      currentAccountIsCertifierAccepted,
+      registerAsUser,
+      getUser
     };
 };
 
