@@ -15,20 +15,20 @@ import {ipfs, ipfsPublicURL} from "../../../config/ipfs";
 import useMineFunctions from "../../../hooks/useMineFunctions";
 
 
-export default function CertifierRegistration() {
+export default function UserRegistration() {
   const [name, setName] = useState("");
   const [tel, setTel] = useState("");
   const [file, setFile] = useState();
   const [cedula, setCedula] = useState("");
   const [email, setEmail] = useState("");
   const [buttonMsg, setButtonMsg] = useState("Registrarme");
-  const { getFee, registerAsCertifier } = useMineFunctions()
+  const { getFee, registerAsUser } = useMineFunctions()
   const [fee, setFee] = useState(0);
   const toast = useToast();
 
 
   useEffect(() => {
-    getFee(0).then(_fee => setFee(_fee)).catch(err => setFee(0))
+    getFee(1).then(_fee => setFee(_fee)).catch(err => setFee(0))
   }, [getFee])
 
   const saveCertifierData = useCallback(async () => {
@@ -60,7 +60,7 @@ export default function CertifierRegistration() {
       .then(cid => {
         setButtonMsg('Registrando usuario...')
         const url = `${ipfsPublicURL}/${cid}`
-        return registerAsCertifier(url)
+        return registerAsUser(url)
       })
       .then(() =>  setButtonMsg('Registrado'))
   }
@@ -85,9 +85,9 @@ export default function CertifierRegistration() {
     >
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
         <Stack align={"center"}>
-          <Heading fontSize={"4xl"}>Registrate como Perito</Heading>
+          <Heading fontSize={"4xl"}>Registrate como Usuario</Heading>
           <Text fontSize={"md"} textAlign={"center"} color={"gray.600"}>
-            Debes estar certificado por los organismos correspondientes
+            Compra y vende bienes
           </Text>
         </Stack>
         <Box
@@ -115,7 +115,7 @@ export default function CertifierRegistration() {
               <Input value={tel} onChange={(e) => setTel(e.target.value)} required type="tel" />
             </FormControl>
             <FormControl id="titulo">
-              <FormLabel>Certificado de peritaje</FormLabel>
+              <FormLabel>PDF de documento de identidad</FormLabel>
               <Input onChange={(e) => pdfToBase64(e)} accept='application/pdf' border={"none"} type="file" required />
             </FormControl>
             <Stack spacing={10}>

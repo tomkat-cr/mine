@@ -3,10 +3,10 @@ import { Buffer } from 'buffer'
 
 const projectId = "2EGwJkUiWqirwBb0KU9DJcKqiE4"
 const projectSecret = "486ca5c02edf0db6dabb3c811055c3f2"
-const REACT_APP_IPFS_HOST = "ipfs.infura.io"
+const REACT_APP_IPFS_HOST = "infura-ipfs.io"
 const REACT_APP_IPFS_PORT = 5001
 const REACT_APP_IPFS_PROTOCOL = "https"
-const REACT_APP_IPFS_PUBLIC_URL = "https://ipfs.infura.io/ipfs"
+const REACT_APP_IPFS_PUBLIC_URL = "https://infura-ipfs.io/ipfs"
 const REACT_APP_DEBUG = true
 
 const auth =
