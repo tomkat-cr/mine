@@ -22,6 +22,7 @@ function CertifiersTable() {
             <Th isNumeric>Country ID</Th>
             <Th>Email</Th>
             <Th>Phone</Th>
+            <Th>Status</Th>
             <Th>Certification</Th>
             <Th>Actions</Th>
         </Tr>
