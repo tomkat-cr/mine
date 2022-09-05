@@ -109,13 +109,23 @@ const useMineFunctions = () => {
     }, [account, mine, getFee])
 
     const getUser = useCallback(async (account) => {
+        if (mine) {
+          const metadataURL = await mine.methods.users(account).call()
+          // TODO ELiminar replace de la metadata
+          const data = await axios.get(`${ipfsPublicURL}/${new URL(metadataURL).pathname.split("/")[2]}`).then(response => response.data)
+          return data
+        }
+    }, [mine])
+
+    const registerProduct = useCallback(async (metadata, price) => {
       if (mine) {
-        const metadataURL = await mine.methods.users(account).call()
-        // TODO ELiminar replace de la metadata
-        const data = await axios.get(`${ipfsPublicURL}/${new URL(metadataURL).pathname.split("/")[2]}`).then(response => response.data)
-        return data
-      }
-  }, [mine])
+          const fee = await getFee(FEE_TYPES.findIndex(type => type === 'Product_Registration'))
+          return await mine.methods.safeMint(account, metadata, price).send({
+            from: account,
+            value: fee
+          })
+        }
+    }, [account, mine, getFee])
 
   
     return {
@@ -132,7 +142,8 @@ const useMineFunctions = () => {
       isCertifierAccepted,
       currentAccountIsCertifierAccepted,
       registerAsUser,
-      getUser
+      getUser,
+      registerProduct
     };
 };
 

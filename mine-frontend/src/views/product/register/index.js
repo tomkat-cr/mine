@@ -11,9 +11,6 @@ import {
   Text,
   useToast,
   Textarea,
-  Select,
-  Checkbox,
-  CheckboxGroup,
   Radio,
   RadioGroup,
   InputRightAddon,
@@ -39,16 +36,18 @@ import { useCallback, useEffect, useState } from "react";
 import {ipfs, ipfsPublicURL} from "../../../config/ipfs";
 import useMineFunctions from "../../../hooks/useMineFunctions";
 
-import axios from "axios";
+import useConverter from "../../../hooks/useConverter";
+import { useWeb3React } from "@web3-react/core";
 
 export default function ProductRegistration() {
+  const {library} = useWeb3React()
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState();
   const [photo, setPhoto] = useState();
   const [productType, setProductType] = useState();
   const [buttonMsg, setButtonMsg] = useState("Registrarme");
-  const { getFee, registerAsUser } = useMineFunctions()
+  const { getFee, registerProduct } = useMineFunctions()
   const [fee, setFee] = useState(0);
   const toast = useToast();
   const [caracteristicainput, setCaracteristicainput] = useState('');
@@ -56,20 +55,12 @@ export default function ProductRegistration() {
   const [caracteristicas, setCaracteristicas] = useState([]);
   const [price, setPrice] = useState(0);
   const format = (val) => `$` + val.toString()
-  const [ethPrice, setEthPrice] = useState(1595.9273712988397);
+  const [ethPrice, setEthPrice] = useState(1);
+  const {getETHPrice} = useConverter()
 
-  // const usdToEth = useCallback(async (usd) => {
-  //     // axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?start=1&limit=10&convert=USD', {
-  //     //   headers: { 'X-CMC_PRO_API_KEY': 'dab20685-d9d4-4310-98f6-d5011ba91efa' }
-  //     // })
-  //     // .then(response => {
-  //     //   const wanted = ['Ethereum']
-  //     //   setEthPrice(response.data.data.filter(currency => wanted.includes(currency.name))[0].quote.USD.price)
-  //     // })
-  //     // .catch(err => console.log(err))
-
-  //     setEthPrice(1595.9273712988397)
-  // }, [])
+  useEffect(() => {
+      getETHPrice().then(rs => setEthPrice(rs / 1e8))
+  }, [getETHPrice])
 
   const addCaracteristica = (key, val) => {
     setCaracteristicas([...caracteristicas, {key: key, value: val}])
@@ -86,16 +77,18 @@ export default function ProductRegistration() {
     getFee(2).then(_fee => setFee(_fee)).catch(err => setFee(0))
   }, [getFee])
 
-  const saveCertifierData = useCallback(async () => {
+  const saveProductData = useCallback(async () => {
     const data = {
       name,
       file,
       description,
       productType,
-      photo
+      photo,
+      price: (price / ethPrice).toString(),
+      caracteristicas
     }
 
-    if (!name || !file) {
+    if (!name || !file || !description || !photo || !productType || !price || caracteristicas.length === 0) {
       toast({
         title: 'Formulario invalido',
         description: "Hay campos faltantes",
@@ -106,16 +99,18 @@ export default function ProductRegistration() {
     }
     
     const { cid } = await ipfs.add(JSON.stringify(data))
+
     return cid
-  }, [name, file, description, productType, photo, toast])
+  }, [name, file, description, productType, photo, toast, caracteristicas, price, ethPrice])
 
   const onSubmit = () => {
     setButtonMsg('Guardando la información...')
-    saveCertifierData()
+    saveProductData()
       .then(cid => {
-        setButtonMsg('Registrando usuario...')
+        if (!cid) return;
+        setButtonMsg('Registrando producto...')
         const url = `${ipfsPublicURL}/${cid}`
-        return registerAsUser(url)
+        return registerProduct(url, library.utils.toWei((price / ethPrice).toString()))
       })
       .then(() =>  setButtonMsg('Registrado'))
   }
@@ -131,11 +126,9 @@ export default function ProductRegistration() {
       }
   }
   const imgToBase64 = (e) => {
-    console.log(e)
     if (e.target.files.length > 0) {
         const reader = new FileReader()
         reader.onload = function(event) {
-          console.log(event.target.result)
           setPhoto(event.target.result)
         }
         reader.readAsDataURL(e.target.files[0])
@@ -156,7 +149,7 @@ export default function ProductRegistration() {
         <Stack align={"center"}>
           <Heading fontSize={"4xl"}>Registra un bien</Heading>
           <Text fontSize={"md"} textAlign={"center"} color={"gray.600"}>
-            Verifica bien la información antes de subirla {price} {JSON.stringify(ethPrice)}
+            Verifica bien la información antes de subirla 
           </Text>
         </Stack>
         <Box
@@ -231,6 +224,7 @@ export default function ProductRegistration() {
            
             <Text color={'gray.500'} fontSize={'sm'} textAlign={'center'}>
               El coste de registro es {(fee / 1e9).toFixed(2)} GWEI
+              
             </Text>
           </Stack>
         </Box>
@@ -241,7 +235,7 @@ export default function ProductRegistration() {
                 </Heading>
                 <Divider/>
                 <Text mb={10} align={'justify'}>
-                  {description}
+                  {description ? description : 'Aqui debes describir tu producto lo mejor posible'}
                 </Text>
                 {caracteristicas.length > 0 && 
                   <Table size={'sm'}>
@@ -271,7 +265,7 @@ export default function ProductRegistration() {
                         </Badge>
                       </Text>
                       <Text>
-                        $ {(price / ethPrice)}
+                        {(price / ethPrice).toFixed(4)} ETH
                       </Text>
                   </HStack>
                 </Box>
