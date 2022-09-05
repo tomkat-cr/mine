@@ -36,6 +36,9 @@ jobs:
 
     - name: npm install and test
       working-directory: ./mine-backend
+      env:
+        DEPLOYER_SIGNER_PRIVATE_KEY: ${{ secrets.DEPLOYER_SIGNER_PRIVATE_KEY }}
+        INFURA_PROJECT_ID_API_KEY: ${{ secrets.INFURA_PROJECT_ID_API_KEY }}
       run: |
         npm install
         npm test
