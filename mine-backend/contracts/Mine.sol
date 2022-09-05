@@ -24,7 +24,7 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
 
     enum FeeType {
         Certifier_Registration,     // 0
-        User_Registration,          // 1 (Javier: Aun no se por que el user se registraria)
+        User_Registration,          // 1
         Product_Registration,       // 2
         Product_Transfer            // 3
     }
@@ -43,7 +43,7 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
         fees[FeeType.Certifier_Registration] = 1 gwei;   // Fixed amount Gwei
         fees[FeeType.User_Registration] = 0 gwei;        // Fixed amount Gwei
         fees[FeeType.Product_Registration] = 1 gwei;     // Fixed amount Gwei
-        fees[FeeType.Product_Transfer] = 1 gwei;         // Percentage
+        fees[FeeType.Product_Transfer] = 1;              // Percentage
     }
 
     // Contract functions
@@ -130,9 +130,6 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
         
         // NFT ownership transfer
         _transfer(ownerOf(_tokenId), msg.sender, _tokenId);
-
-        // Token transference missing maybe we could find something in:
-        // https://github.com/ProjectOpenSea/opensea-creatures/blob/master/contracts/ERC721Tradable.sol
     }
 
     function productPrice(uint256 _tokenId) private view returns (uint256) {
@@ -169,7 +166,7 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
         delete certifiers[_account];
     }
 
-    // FEE STUFF
+    // Fee stuff
     
     function setFee(FeeType feeType, uint256 _feeAmount) onlyRole(DEFAULT_ADMIN_ROLE) public {
         fees[feeType] = _feeAmount;

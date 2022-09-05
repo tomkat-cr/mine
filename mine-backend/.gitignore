@@ -162,3 +162,5 @@ typechain-types
 cache
 artifacts
 
+#Remix files
+.deps
