@@ -8,19 +8,15 @@ import {
     Text,
     Stack,
     useColorModeValue,
-    Divider,
   } from '@chakra-ui/react';
   import { FaEthereum } from 'react-icons/fa';
 import useWalletData from '../../hooks/useWalletData';
-import ProductAddToCart from '../../layouts/internal/card';
 import { ButtonConnection } from '../../layouts/internal/wallet';
   
   export default function Profile() {
     const {address, network, unsupportedChain, connect, disconnect, active, balance} = useWalletData()
     return (
-    <Box minH={'100vh'}>
-
-    
+    <Box minH={"calc(100vh - 130px)"} bg={"gray.50"}>  
       <Center py={6} bg={'gray.50'}>
         <Box
           maxW={'270px'}
@@ -53,12 +49,6 @@ import { ButtonConnection } from '../../layouts/internal/wallet';
   
             <Stack direction={'row'} justify={'center'} mb={4} spacing={6}>
               <Stack spacing={0} align={'center'}>
-                <Text fontWeight={600}>10</Text>
-                <Text fontSize={'sm'} color={'gray.500'}>
-                  Productos
-                </Text>
-              </Stack>
-              <Stack spacing={0} align={'center'}>
                 <Text fontWeight={600}><Icon as={FaEthereum} boxSize={3}/>{balance}</Text>
                 <Text fontSize={'sm'} color={'gray.500'}>
                   Saldo
@@ -72,10 +62,6 @@ import { ButtonConnection } from '../../layouts/internal/wallet';
           </Box>
         </Box>
       </Center>
-      <Divider/>
-      <Flex maxW={'100%'} wrap={'wrap'} alignItems='center'justifyContent={'center'} mt={4} mb={4} gap='2'>
-            {[1,2,3,4,5,6,7,8,9,10].map((el, i) => <ProductAddToCart key={i}/>)}
-        </Flex>
     </Box>
     );
   }

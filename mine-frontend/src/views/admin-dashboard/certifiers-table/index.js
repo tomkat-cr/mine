@@ -14,7 +14,7 @@ function CertifiersTable() {
 
     const address = "0x38a2740Dc8d87039709b1B9983d2B2FeF4c825D0"
     const filler = [address,address,address,address,address,address,address,address]
-    console.log(filler)
+
     const Titles = () => (
         <Tr>
             <Th>Account</Th>
