@@ -21,13 +21,15 @@ function CertifiersRow({address}) {
     cedula: '',
     email: '',
     tel: '',
-    file: ''
+    file: '',
   });
-  const {getCertifier, acceptCertifier, removeCertifier} = useMineFunctions()
+  const [status, setStatus] = useState('-');
+  const {getCertifier, acceptCertifier, removeCertifier, isCertifierAccepted} = useMineFunctions()
 
     useEffect(() => {
       getCertifier(address).then(rs => setCertifier(rs))
-    }, [getCertifier, address])
+      isCertifierAccepted(address).then(rs => setStatus(rs ? 'Approved' : 'Pending'))
+    }, [getCertifier, isCertifierAccepted, address])
 
     const truncatedAddress = useTruncatedAddress(address);
     return (
@@ -37,6 +39,7 @@ function CertifiersRow({address}) {
         <Td isNumeric>{certifier.cedula}</Td>
         <Td>{certifier.email}</Td>
         <Td>{certifier.tel}</Td>
+        <Td>{status}</Td>
         <Td>
           
           <Button colorScheme={'blue'} variant={'ghost'} size={'xs'} onClick={() => openFileBase64(encodeURI(certifier.file))}>

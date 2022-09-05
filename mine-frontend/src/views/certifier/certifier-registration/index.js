@@ -8,12 +8,12 @@ import {
   Button,
   Heading,
   Text,
-  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import {ipfs, ipfsPublicURL} from "../../../config/ipfs";
 import useMineFunctions from "../../../hooks/useMineFunctions";
+import { InfoIcon } from '@chakra-ui/icons';
 
 
 export default function CertifierRegistration() {
@@ -23,14 +23,15 @@ export default function CertifierRegistration() {
   const [cedula, setCedula] = useState("");
   const [email, setEmail] = useState("");
   const [buttonMsg, setButtonMsg] = useState("Registrarme");
-  const { getFee, registerAsCertifier } = useMineFunctions()
+  const { getFee, registerAsCertifier, currentAccountIsCertifierAccepted } = useMineFunctions()
   const [fee, setFee] = useState(0);
   const toast = useToast();
-
+  const [waiting, setWaiting] = useState(true); 
 
   useEffect(() => {
     getFee(0).then(_fee => setFee(_fee)).catch(err => setFee(0))
-  }, [getFee])
+    currentAccountIsCertifierAccepted().then(isAccepted => setWaiting(!isAccepted))
+  }, [getFee, currentAccountIsCertifierAccepted])
 
   const saveCertifierData = useCallback(async () => {
     const data = {
@@ -77,25 +78,28 @@ export default function CertifierRegistration() {
       }
   }
 
+  if (waiting) {
+    return <Info/>
+  }
 
   return (
     <Flex
       minH={"calc(100vh - 130px)"}
       align={"center"}
       justify={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}
+      bg={"gray.50"}
     >
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
         <Stack align={"center"}>
           <Heading fontSize={"4xl"}>Registrate como Perito</Heading>
           <Text fontSize={"md"} textAlign={"center"} color={"gray.600"}>
-            Debes estar certificado por los organismos correspondientes
+            Debes estar certificado por los organismos correspondientes {JSON.stringify(waiting)}
           </Text>
         </Stack>
         <Box
 
           rounded={"lg"}
-          bg={useColorModeValue("white", "gray.700")}
+          bg={"white"}
           boxShadow={"lg"}
           p={8}
         >
@@ -141,5 +145,21 @@ export default function CertifierRegistration() {
         </Box>
       </Stack>
     </Flex>
+  );
+}
+
+
+
+function Info() {
+  return (
+    <Box textAlign="center" minH={'calc(100vh - 130px)'} py={10} px={6}>
+      <InfoIcon boxSize={'50px'} color={'blue.500'} />
+      <Heading as="h2" size="xl" mt={6} mb={2}>
+        Estas a la espera de ser aprobado
+      </Heading>
+      <Text color={'gray.500'}>
+        Nuestro equipo está corroborando la veracidad de tu información. Esto puede tardar unos dias
+      </Text>
+    </Box>
   );
 }

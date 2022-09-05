@@ -85,6 +85,16 @@ const useMineFunctions = () => {
           return await mine.methods.removeCertifier(certifierAddress).send({from: account})
         }
     }, [account, mine])
+
+    const isCertifierAccepted = useCallback(async (account) => {
+        if (mine) {
+          return await mine.methods.reviewedCertifiers(account).call()
+        }
+    }, [mine])
+
+    const currentAccountIsCertifierAccepted = useCallback(async () => {
+      return isCertifierAccepted(account)
+    }, [isCertifierAccepted, account])
   
     return {
       getFee,
@@ -97,6 +107,8 @@ const useMineFunctions = () => {
       registerAsCertifier,
       acceptCertifier,
       removeCertifier,
+      isCertifierAccepted,
+      currentAccountIsCertifierAccepted
     };
 };
 
