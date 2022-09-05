@@ -1,7 +1,7 @@
 {
   "name": "mine-interface",
   "version": "0.1.0",
-  "homepage": "https://gof-edv.github.io/mine-frontend/",
+  "homepage": "https://gof-edv.github.io/mine/",
   "private": true,
   "dependencies": {
     "@chakra-ui/icons": "^2.0.9",
