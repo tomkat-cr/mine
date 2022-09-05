@@ -32,7 +32,7 @@ jobs:
           npm install
           npm test    
           npm run compile
-          npm deploy
+          npm run deploy
       - name: frontend npm ci, build
         working-directory: ./mine-frontend
         run: |
