@@ -3,14 +3,12 @@ import {
   Heading,
   Avatar,
   Box,
-  Center,
   Icon,
   Flex,
   Text,
   Stack,
   HStack,
   Button,
-  Divider,
   VStack
 } from "@chakra-ui/react";
 import { useWeb3React } from "@web3-react/core";

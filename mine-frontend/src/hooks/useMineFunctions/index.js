@@ -127,6 +127,14 @@ const useMineFunctions = () => {
         }
     }, [account, mine, getFee])
 
+    const certifyProduct = useCallback(async (tokenId, metadata) => {
+      if (mine) {
+          return await mine.methods.certify(tokenId, metadata).send({
+            from: account,
+          })
+        }
+    }, [mine, account])
+
     const getProduct = useCallback(async (tokenId) => {
         if (mine) {
           const metadataURL = await mine.methods.tokenURI(tokenId).call()
@@ -135,6 +143,13 @@ const useMineFunctions = () => {
           return data
         }
     }, [mine])
+
+    const getDataFromSeller = useCallback(async (tokenId) => {
+      if (mine) {
+        const sellerAddress = await mine.methods.ownerOf(tokenId).call()
+        return await getUser(sellerAddress)
+      }
+  }, [mine, getUser])
 
   
     return {
@@ -153,7 +168,9 @@ const useMineFunctions = () => {
       registerAsUser,
       getUser,
       registerProduct,
-      getProduct
+      getProduct,
+      getDataFromSeller,
+      certifyProduct
     };
 };
 

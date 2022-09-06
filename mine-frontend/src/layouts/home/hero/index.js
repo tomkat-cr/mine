@@ -60,8 +60,8 @@ export default function Hero() {
             </Text>
           </Heading>
           <Text color={"gray.500"}>
-            Compra y vende muebles mas rapido, <br />
-            mas seguro y sin depender de nadie
+            Compra y vende muebles más rápido, <br />
+            más seguro y sin depender de nadie
           </Text>
           <Stack
             spacing={{ base: 4, sm: 6 }}

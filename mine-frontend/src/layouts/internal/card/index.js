@@ -20,6 +20,7 @@ function ProductAddToCart({tokenId}) {
     } = useMineFunctions();
 
     useEffect(() => {
+      console.log(tokenId);
       getProduct(tokenId).then(rs => setProduct(rs));
     }, [getProduct, tokenId]);
 

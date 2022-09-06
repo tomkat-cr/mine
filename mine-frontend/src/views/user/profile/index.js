@@ -3,7 +3,6 @@ import {
   Heading,
   Avatar,
   Box,
-  Center,
   Icon,
   Flex,
   Text,
