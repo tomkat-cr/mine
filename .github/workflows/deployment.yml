@@ -1,11 +1,13 @@
 
 name: Deploy Mine
 
+
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    # types: [ closed ]
   workflow_dispatch:
 jobs:
   deploy:
@@ -27,7 +29,6 @@ jobs:
         env:
           DEPLOYER_SIGNER_PRIVATE_KEY: ${{ secrets.DEPLOYER_SIGNER_PRIVATE_KEY }}
           INFURA_PROJECT_ID_API_KEY: ${{ secrets.INFURA_PROJECT_ID_API_KEY }}
-          ALCHEMY_PROJECT_ID_API_KEY: ${{ secrets.ALCHEMY_PROJECT_ID_API_KEY }}
         run: |
           npm install
           npm test    
@@ -42,4 +43,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: ./build          
+          publish_dir: ./mine-frontend/build          
