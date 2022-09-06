@@ -13,18 +13,22 @@ import { FaEthereum } from 'react-icons/fa';
 import { useState, useEffect } from "react";
 import useMineFunctions from "../../../hooks/useMineFunctions";
   
-function ProductAddToCart({tokenId}) {
+function ProductAddToCart({filter, tokenId}) {
     const [product, setProduct] = useState({});
     const {
       getProduct
     } = useMineFunctions();
 
     useEffect(() => {
-      console.log(tokenId);
       getProduct(tokenId).then(rs => setProduct(rs));
     }, [getProduct, tokenId]);
 
     if (product === undefined || product === null || Object.keys(product).length === 0) {
+      return null
+    }
+
+    const keyFilter = Object.keys(filter)[0];
+    if (product[keyFilter] !== filter[keyFilter]) {
       return null
     }
 
@@ -77,7 +81,7 @@ function ProductAddToCart({tokenId}) {
                     <Box as="span" color={'gray.600'} fontSize="lg">
                     <Icon as={FaEthereum} boxSize={4}/>
                     </Box>
-                    {product.price}
+                    {parseFloat(product.price).toFixed(2)}
                 </Box>
                 </Flex>
             <Box>

@@ -45,15 +45,22 @@ const openFileBase64 = base64String => {
 };
 function Product() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const disclosure = useDisclosure();
+  
   const finalRef = useRef(null);  const [product, setProduct] = useState({});
+  const [userisOwner, setUserIsOwner] = useState(false);
   const [user, setUser] = useState();
   const { tokenId } = useParams();
   const [userIsCertifier, setUserIsCertifier] = useState(false);
-  const { getProduct, getDataFromSeller, isCertifier } = useMineFunctions();
+  const { getProduct, getDataFromSeller, isCertifier, isOwner } = useMineFunctions();
 
   useEffect(() => {
     getProduct(tokenId).then(rs => setProduct(rs));
   }, [getProduct, tokenId]);
+
+  useEffect(() => {
+    isOwner(tokenId).then(rs => setUserIsOwner(rs));
+  }, [isOwner, tokenId]);
 
   useEffect(() => {
     getDataFromSeller(tokenId).then(rs => setUser(rs));
@@ -99,7 +106,7 @@ function Product() {
               {product.name}
             </Heading>
             <Text color={"gray.900"} fontWeight={300} fontSize={"2xl"}>
-              <Icon as={FaEthereum} boxSize={4} /> {product.price}
+              <Icon as={FaEthereum} boxSize={4} /> {parseFloat(product.price).toFixed(4)}
               {product.isVerified && (
                 <Badge ml={2} colorScheme={"green"} fontSize={"sm"}>
                   Verificado
@@ -204,10 +211,21 @@ function Product() {
                     {c["value"]}
                   </ListItem>
                 ))}
+                {userIsCertifier && 
+                  <ListItem>
+                    <Button
+                      colorScheme={"blue"}
+                      variant={"link"}
+                      onClick={() => openFileBase64(encodeURI(product.file))}
+                    >
+                      Certificado de propiedad del producto{" "}
+                      <ExternalLinkIcon color={"blue.700"} mx="2px" />
+                    </Button>
+                  </ListItem>
+                }
               </List>
             </Box>
           </Stack>
-
           {userIsCertifier ? (
             <Button
               rounded={"none"}
@@ -217,8 +235,8 @@ function Product() {
               py={"7"}
               colorScheme={"blue"}
               textTransform={"uppercase"}
-              disabled={product.isVerified}
-              isDisabled={product.isVerified}
+              disabled={product.isVerified || userisOwner}
+              isDisabled={product.isVerified || userisOwner}
               onClick={onOpen}
               _hover={{
                 transform: "translateY(2px)",
@@ -234,6 +252,9 @@ function Product() {
               mt={8}
               size={"lg"}
               py={"7"}
+              onClick={disclosure.onOpen}
+              disabled={userisOwner}
+              isDisabled={userisOwner}
               colorScheme={"blue"}
               textTransform={"uppercase"}
               _hover={{
@@ -253,6 +274,7 @@ function Product() {
         </Stack>
       </SimpleGrid>
       <ModalVerify {...{finalRef, isOpen, onOpen, onClose, tokenId, product}}/>
+      <ModalBuy finalRef={disclosure.finalRef} isOpen={disclosure.isOpen} onOpen={disclosure.onOpen} onClose={disclosure.onClose} tokenId={tokenId} product={product}/>
     </Container>
   );
 }
@@ -351,4 +373,49 @@ function ModalVerify({finalRef, isOpen, onClose, product, tokenId}) {
       </Modal>
     </>
   );
+}
+
+function ModalBuy({finalRef, isOpen, onClose, product, tokenId}) {
+  const [buttonMsg, setButtonMsg] = useState("Comprar");
+  const {buyProduct} = useMineFunctions()
+
+
+  const onSubmit = () => {
+      setButtonMsg('Transfiriendo bien a tu cuenta...')
+      buyProduct(tokenId, product.price).then(() => setButtonMsg('Transferido'))
+  }
+  
+  return (
+  <>  
+    <Modal finalFocusRef={finalRef} isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent rounded={'none'} >
+        <ModalHeader>¿Estas seguro de comprar este producto?</ModalHeader>
+        <ModalCloseButton />
+        <Divider/>
+        <ModalBody>
+
+          Esta transacción no podrá ser revertida una vez sea agregada en
+          la blockchain
+
+        </ModalBody>
+        
+        <ModalFooter borderTop={'1px'} color={'gray.100'}>
+          <Button rounded={'none'} colorScheme="blue" mr={3} onClick={onClose}>
+            cerrar
+          </Button>
+          <Button
+            onClick={onSubmit}
+            colorScheme={'blue'}
+            variant={'ghost'}
+            disabled={buttonMsg !== 'Comprar'}
+            isDisabled={buttonMsg !== 'Comprar'}
+          >
+            {buttonMsg}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  </>
+);
 }

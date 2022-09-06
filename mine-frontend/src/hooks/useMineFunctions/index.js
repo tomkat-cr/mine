@@ -145,11 +145,28 @@ const useMineFunctions = () => {
     }, [mine])
 
     const getDataFromSeller = useCallback(async (tokenId) => {
+        if (mine) {
+          const sellerAddress = await mine.methods.ownerOf(tokenId).call()
+          return await getUser(sellerAddress)
+        }
+    }, [mine, getUser])
+
+    const isOwner = useCallback(async (tokenId) => {
+        if (mine) {
+          const isOwner = await mine.methods.ownerOf(tokenId).call()
+          return isOwner === account
+        }
+    }, [mine, account])
+
+    const buyProduct = useCallback(async (tokenId, price) => {
       if (mine) {
-        const sellerAddress = await mine.methods.ownerOf(tokenId).call()
-        return await getUser(sellerAddress)
-      }
-  }, [mine, getUser])
+          const fee = await getFee(FEE_TYPES.findIndex(type => type === 'Product_Transfer'))
+          return await mine.methods.buyProduct(tokenId, fee).send({
+            from: account,
+            value: library.utils.toWei(price)
+          })
+        }
+    }, [mine, account, library?.utils, getFee])
 
   
     return {
@@ -170,7 +187,9 @@ const useMineFunctions = () => {
       registerProduct,
       getProduct,
       getDataFromSeller,
-      certifyProduct
+      certifyProduct,
+      isOwner,
+      buyProduct
     };
 };
 
