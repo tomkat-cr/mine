@@ -3,11 +3,8 @@ name: Deploy Mine
 
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
-    # types: [ closed ]
+    types: [ closed ]
   workflow_dispatch:
 jobs:
   deploy:
