@@ -1,0 +1,43 @@
+
+name: Deploy Mine
+
+
+on:
+  pull_request:
+    types: [ closed ]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ${{ matrix.os }}
+    name: Deploy Mine Prod
+    strategy:
+      matrix:
+        node-version: [16.x] 
+        os: [ubuntu-20.04]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: backend npm ci, build and test
+        working-directory: ./mine-backend
+        env:
+          DEPLOYER_SIGNER_PRIVATE_KEY: ${{ secrets.DEPLOYER_SIGNER_PRIVATE_KEY }}
+          INFURA_PROJECT_ID_API_KEY: ${{ secrets.INFURA_PROJECT_ID_API_KEY }}
+        run: |
+          npm install
+          npm test    
+          npm run compile
+          npm run deploy
+      - name: frontend npm ci, build
+        working-directory: ./mine-frontend
+        run: |
+          npm install
+          npm run build --if-present
+      - name: deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_dir: ./mine-frontend/build          
