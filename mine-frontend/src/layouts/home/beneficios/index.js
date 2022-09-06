@@ -9,9 +9,9 @@ export default function Benefits() {
   return (
     <Center p={4}>
       <HStack justifyContent={'center'} spacing={10} wrap={'wrap'}>
-        <Benefit benefit={'Pagos en ETH'} engage={'Pagos seguros en la red de Ethereum'} image={ethereumPayments}/>
-        <Benefit benefit={'Trazabilidad'} engage={'Mira quienes han tenido tu nueva propiedad'} image={tracing}/>
-        <Benefit benefit={'Velocidad'} engage={'Compra y vende tus vienes a tiempo record'} image={speedness}/>
+        <Benefit benefit={'Pagos en ETH'} engage={'Pagos seguros en la red de Ethereum.'} image={ethereumPayments}/>
+        <Benefit benefit={'Trazabilidad'} engage={'Mira quiénes han tenido tu nueva propiedad.'} image={tracing}/>
+        <Benefit benefit={'Velocidad'} engage={'Compra y vende tus bienes a tiempo record.'} image={speedness}/>
       </HStack>
     </Center>
   );

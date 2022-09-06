@@ -11,7 +11,9 @@ import {
     Text,
     Box
 } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import useMineFunctions from '../../../hooks/useMineFunctions';
 import useWalletData from '../../../hooks/useWalletData';
 
 const AvatarWallet = ({active}) => {
@@ -40,6 +42,19 @@ export const ButtonConnection = ({active, connect, unsupportedChain}) => {
 
 function Wallet() {
     const {address, network, unsupportedChain, connect, disconnect, active, balance} = useWalletData()
+    const { guessUserType } = useMineFunctions()
+    const [user, setUser] = useState('');
+    const accountType = {
+        'user': 'BUY/SELL account',
+        'certifier': 'CERTIFIER account',
+        'admin': 'ADMIN account',
+        '': 'Anonymous account'
+    };
+    useEffect(() => {
+        guessUserType().then(
+        type => setUser(type)
+        )
+    }, [guessUserType])
 
     return (
         <Flex alignItems={'center'}>
@@ -70,8 +85,19 @@ function Wallet() {
                              ∼{balance} ETH
                         </Text>
                     </MenuItem>
+                    <MenuItem as={Box} _hover={{ background: 'transparent' }} closeOnSelect={false} isFocusable={false}>
+                        <Text as={'small'} color={'gray.600'}>
+                             {accountType[user]}
+                        </Text>
+                    </MenuItem>
                     <MenuDivider/>
-                    <MenuItem as={Link} to={'/profile'}>Mis bienes</MenuItem>
+                    <MenuItem as={Link} to={'/profile'}>Mi Perfil</MenuItem>
+                    {user === '' && 
+                        <>
+                        <MenuItem as={Link} to={'/user'}>Compra y vende tus bienes</MenuItem>
+                        <MenuItem as={Link} to={'/certifier'}>Certifica bienes</MenuItem>
+                        </>
+                    }
                     </>
                 )}
                 
@@ -81,7 +107,6 @@ function Wallet() {
                         <ButtonConnection connect={disconnect} active={active} unsupportedChain={unsupportedChain}/>
                         : <ButtonConnection connect={connect} active={active} unsupportedChain={unsupportedChain}/>
                     }
-                    
                 </MenuItem>
             </MenuList>
             </Menu>

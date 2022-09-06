@@ -39,6 +39,11 @@ describe("Mine Contract", () => {
 		await mine.connect(admin).acceptCertifier(certifier.address);
 	}
 
+	async function registerUnCertifier() {
+		const certifierMetadataUrl = "url_metadata";
+		await mine.connect(certifier).registerAsCertifier(certifierMetadataUrl, {value: ONE_GWEI});
+	}
+
 	async function safeMint() {
 		const to = sellerUser.address;
 		const metadataUrl = "metadata";
@@ -104,6 +109,13 @@ describe("Mine Contract", () => {
 		});
 	});
 
+	describe("Get Current token Id", () => {
+		it("should return first token id", async () => {
+			const tokenId = await mine.connect(admin).getCurrentTokenId();
+			expect(tokenId).to.equal(0);
+		});
+	});
+
 	describe("Register user", () => {
 		it("Register a new user(seller/buyer)", async () => {
 			const userMetadataUrl = "url_metadata";
@@ -111,6 +123,26 @@ describe("Mine Contract", () => {
 			expect(newUserRegistered).to.equal(userMetadataUrl);
 		});
 	});
+
+	describe("Certifiers", ()=> {
+		it("Register UnCertifier", async () => {
+			await registerUnCertifier();
+			const uncertifiers = await mine.connect(certifier).getAllUnCertifiersAccounts();
+			const certifiers = await mine.connect(certifier).getAllCertifiersAccounts();
+
+			expect(uncertifiers[0]).to.be.equal(certifier.address);
+			expect(certifiers.length).to.be.equal(0);
+		})
+
+		it("Register Certifier", async () => {
+			await registerCertifier();
+			const uncertifiers = await mine.connect(certifier).getAllUnCertifiersAccounts();
+			const certifiers = await mine.connect(certifier).getAllCertifiersAccounts();
+
+			expect(certifiers[0]).to.be.equal(certifier.address);
+			expect(uncertifiers.length).to.be.equal(0);
+		})
+	})
 
 	describe("Certify", () => {
 		it("Certify NFT", async () => {
