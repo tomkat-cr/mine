@@ -36,6 +36,9 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
     mapping (uint256 => bool) public productsVerified;
     mapping (address => bool) public bannedUsers;
     mapping (FeeType => uint256) public fees;
+    
+    address[] private uncertifiedsAccounts;
+    address[] private certifiedsAccounts;
 
     constructor() ERC721(CONTRACT_NAME, CONTRACT_SYMBOL) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -54,6 +57,56 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
 
     function getCurrentTokenId() public view returns (uint256) {
         return _tokenIdCounter.current();
+    }
+
+    function getAllCertifiersAccounts() public view returns (address[] memory) {
+        return certifiedsAccounts;
+    }
+
+    function getAllUnCertifiersAccounts() public view returns (address[] memory) {
+        return uncertifiedsAccounts;
+    }
+
+    function addCertifiedAccount(address certified) private
+    {
+        certifiedsAccounts.push(certified);
+    }
+
+    function addUnCertifiedAccount(address uncertified) private
+    {
+        uncertifiedsAccounts.push(uncertified);
+    }
+
+    function removeUnCertifiedAccount(address uncertified) private
+    {
+        uint256 size = uncertifiedsAccounts.length;
+        uint256 pos = size;
+        for(uint256 i=0; i < size; i++){
+            if(uncertifiedsAccounts[i] == uncertified) {
+                pos = i;
+                i = size;
+            }
+        }
+        for (uint i = pos; i<size-1; i++){
+            uncertifiedsAccounts[i] = uncertifiedsAccounts[i+1];
+        }
+        uncertifiedsAccounts.pop();
+    }
+
+     function removeCertifiedAccount(address uncertified) private
+    {
+        uint256 size = certifiedsAccounts.length;
+        uint256 pos = size;
+        for(uint256 i=0; i < size; i++){
+            if(certifiedsAccounts[i] == uncertified) {
+                pos = i;
+                i = size;
+            }
+        }
+        for (uint i = pos; i<size-1; i++){
+            certifiedsAccounts[i] = certifiedsAccounts[i+1];
+        }
+        certifiedsAccounts.pop();
     }
 
     // NFT functions
@@ -154,6 +207,7 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
         certifiers[msg.sender] = _certifierDataURL;
         reviewedCertifiers[msg.sender] = false;
         contractOwner.transfer(msg.value);
+        addUnCertifiedAccount(msg.sender);
         // New certifier must be reviewed by GOF, then GOF will call addCertifier()
     }
 
@@ -161,6 +215,8 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
     function acceptCertifier(address _account) onlyRole(DEFAULT_ADMIN_ROLE) public {
         _grantRole(CERTIFIER_ROLE, _account);
         reviewedCertifiers[_account] = true;
+        addCertifiedAccount(_account);
+        removeUnCertifiedAccount(_account);
     }
 
     function removeCertifier(address _account) public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -168,6 +224,7 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
         _revokeRole(CERTIFIER_ROLE, _account);
         delete reviewedCertifiers[_account];
         delete certifiers[_account];
+        removeCertifiedAccount(_account);
     }
 
     // Fee stuff
