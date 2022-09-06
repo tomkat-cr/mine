@@ -104,6 +104,13 @@ describe("Mine Contract", () => {
 		});
 	});
 
+	describe.only("Get Current token Id", () => {
+		it("should return first token id", async () => {
+			const tokenId = await mine.connect(admin).getCurrentTokenId();
+			expect(tokenId).to.equal(0);
+		});
+	});
+
 	describe("Register user", () => {
 		it("Register a new user(seller/buyer)", async () => {
 			const userMetadataUrl = "url_metadata";

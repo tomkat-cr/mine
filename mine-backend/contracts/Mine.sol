@@ -52,6 +52,10 @@ contract Mine is ERC721, ERC721URIStorage, AccessControl {
         return CONTRACT_VERSION;
     }
 
+    function getCurrentTokenId() public view returns (uint256) {
+        return _tokenIdCounter.current();
+    }
+
     // NFT functions
 
     function safeMint(address _to, string memory _metadataUrl, uint256 _price) public payable {
