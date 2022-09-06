@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "npx hardhat compile",
     "test": "npx hardhat test",
-    "deploy": "npx hardhat run scripts/sample-script.js",
+    "deploy": "npm run deploy:goerli",
     "dev:deploy": "npx hardhat run --network localhost scripts/deploy.js",
     "deploy:rinkeby": "npx hardhat run scripts/deploy.js --network rinkeby",
     "deploy:ropsten": "npx hardhat run scripts/deploy.js --network ropsten",
@@ -33,6 +33,7 @@
     "typechain": "^8.1.0"
   },
   "dependencies": {
+    "@chainlink/contracts": "^0.4.1",
     "@openzeppelin/contracts": "^4.7.3"
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "mine-interface",
   "version": "0.1.0",
-  "homepage": "https://gof-edv.github.io/mine-frontend/",
+  "homepage": "https://gof-edv.github.io/mine/",
   "private": true,
   "dependencies": {
     "@chakra-ui/icons": "^2.0.9",
@@ -25,12 +25,11 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4",
-    "web3": "^1.7.5",
-    "web3-react": "^5.0.5"
+    "web3": "^1.7.5"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "BUILD_PATH=docs react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
