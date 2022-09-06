@@ -127,6 +127,15 @@ const useMineFunctions = () => {
         }
     }, [account, mine, getFee])
 
+    const getProduct = useCallback(async (tokenId) => {
+        if (mine) {
+          const metadataURL = await mine.methods.tokenURI(tokenId).call()
+          // TODO ELiminar replace de la metadata
+          const data = await axios.get(`${ipfsPublicURL}/${new URL(metadataURL).pathname.split("/")[2]}`).then(response => response.data)
+          return data
+        }
+    }, [mine])
+
   
     return {
       getFee,
@@ -143,7 +152,8 @@ const useMineFunctions = () => {
       currentAccountIsCertifierAccepted,
       registerAsUser,
       getUser,
-      registerProduct
+      registerProduct,
+      getProduct
     };
 };
 

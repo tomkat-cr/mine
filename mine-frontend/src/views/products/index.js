@@ -25,7 +25,7 @@ function Products() {
                 </InputGroup>
             </HStack>
             <Flex maxW={'100%'} wrap={'wrap'} alignItems='center'justifyContent={'center'} mb={4} gap='2'>
-                {[1,2,3,4,5,6,7,8,9,10].map((el, i) => <ProductAddToCart key={i}/>)}
+                {[0].map((el, i) => <ProductAddToCart tokenId={i} key={i}/>)}
             </Flex>
             
         </Box>

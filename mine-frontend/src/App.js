@@ -41,7 +41,7 @@ function App() {
             <Route path="/profile" element={<ProfileCertifier/>}/>
             <Route path="/acerca-de-nosotros" element={<AboutUs/>}/>
             <Route path="/bienes" element={<Products/>}/>
-            <Route path="/product" element={<Product/>}/>
+            <Route path="/product/:tokenId" element={<Product/>}/>
             <Route path="/" element={<Home/>}/>
             <Route path="*" element={<NotFound/>}/>
           </>
@@ -62,7 +62,7 @@ function App() {
             <Route path="/profile" element={<Profile/>}/>
             <Route path="/acerca-de-nosotros" element={<AboutUs/>}/>
             <Route path="/bienes" element={<Products/>}/>
-            <Route path="/product" element={<Product/>}/>
+            <Route path="/product/:tokenId" element={<Product/>}/>
             <Route path="/" element={<AdminDashboard/>}/>
             <Route path="*" element={<NotFound/>}/>
           </>
@@ -82,7 +82,7 @@ function App() {
             <Route path="/acerca-de-nosotros" element={<AboutUs/>}/>
             <Route path="/bienes" element={<Products/>}/>
             <Route path="/bienes/registrar/" element={<ProductRegistration/>}/>
-            <Route path="/product" element={<Product/>}/>
+            <Route path="/product/:tokenId" element={<Product/>}/>
             <Route path="/" element={<Home/>}/>
             <Route path="*" element={<NotFound/>}/>
           </>
@@ -102,7 +102,7 @@ function App() {
         }
         <Route path="/acerca-de-nosotros" element={<AboutUs/>}/>
         <Route path="/bienes" element={<Products/>}/>
-        <Route path="/product" element={<Product/>}/>
+        <Route path="/product/:tokenId" element={<Product/>}/>
         <Route path="/certifier" element={<CertifierRegistration/>}/>
         <Route path="/user" element={<UserRegistration/>}/>
         <Route path="/" element={<Home/>}/>
