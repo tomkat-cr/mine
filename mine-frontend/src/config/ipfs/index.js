@@ -7,7 +7,7 @@ const REACT_APP_IPFS_HOST = "infura-ipfs.io"
 const REACT_APP_IPFS_PORT = 5001
 const REACT_APP_IPFS_PROTOCOL = "https"
 const REACT_APP_IPFS_PUBLIC_URL = "https://infura-ipfs.io/ipfs"
-const REACT_APP_DEBUG = true
+const REACT_APP_DEBUG = false
 
 const auth =
     'Basic ' + Buffer.from(`${projectId}:${projectSecret}`).toString('base64')

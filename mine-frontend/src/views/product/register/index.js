@@ -46,7 +46,7 @@ export default function ProductRegistration() {
   const [file, setFile] = useState();
   const [photo, setPhoto] = useState();
   const [productType, setProductType] = useState();
-  const [buttonMsg, setButtonMsg] = useState("Registrarme");
+  const [buttonMsg, setButtonMsg] = useState("Registrar Bien");
   const { getFee, registerProduct } = useMineFunctions()
   const [fee, setFee] = useState(0);
   const toast = useToast();
@@ -95,7 +95,7 @@ export default function ProductRegistration() {
         status: 'error',
         duration: 3000
       })
-      return;
+      throw Error('Invalid Form')
     }
     
     const { cid } = await ipfs.add(JSON.stringify(data))
@@ -112,7 +112,18 @@ export default function ProductRegistration() {
         const url = `${ipfsPublicURL}/${cid}`
         return registerProduct(url, library.utils.toWei((price / ethPrice).toString()))
       })
-      .then(() =>  setButtonMsg('Registrado'))
+      .then(() =>  {
+        toast({
+          title: 'Transaccion completada',
+          description: "Tu bien ya fue registrado!",
+          status: 'success',
+          duration: 3000
+        })
+        setButtonMsg('Registrado')
+      })
+      .catch(err => {
+        setButtonMsg('Registrar Bien')
+      })
   }
   const pdfToBase64 = (e) => {
       if (e.target.files.length > 0) {
@@ -277,8 +288,8 @@ export default function ProductRegistration() {
                     bg={"blue.400"}
                     rounded={'none'}
                     color={"white"}
-                    disabled={buttonMsg !== 'Registrarme'}
-                    isDisabled={buttonMsg !== 'Registrarme'}
+                    disabled={buttonMsg !== 'Registrar Bien'}
+                    isDisabled={buttonMsg !== 'Registrar Bien'}
                     _hover={{
                       bg: "blue.500",
                     }}

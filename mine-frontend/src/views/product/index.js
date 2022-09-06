@@ -317,7 +317,7 @@ function ModalVerify({finalRef, isOpen, onClose, product, tokenId}) {
           status: 'error',
           duration: 3000
         })
-        return;
+        throw Error('Invalid Form');
       }
       const { cid } = await ipfs.add(JSON.stringify(data))
       return cid
@@ -331,7 +331,18 @@ function ModalVerify({finalRef, isOpen, onClose, product, tokenId}) {
           const url = `${ipfsPublicURL}/${cid}`
           return certifyProduct(tokenId, url)
         })
-        .then(() => setButtonMsg('Verificado'))
+        .then(() =>  {
+          toast({
+            title: 'Transaccion completada',
+            description: "El bien ya fue verificado!",
+            status: 'success',
+            duration: 3000
+          })
+          setButtonMsg('Verificado')
+        })
+        .catch(err => {
+          setButtonMsg('Verificar')
+        })
     }
     
     return (
@@ -382,7 +393,11 @@ function ModalBuy({finalRef, isOpen, onClose, product, tokenId}) {
 
   const onSubmit = () => {
       setButtonMsg('Transfiriendo bien a tu cuenta...')
-      buyProduct(tokenId, product.price).then(() => setButtonMsg('Transferido'))
+      buyProduct(tokenId, product.price)
+        .then(() => setButtonMsg('Transferido'))
+        .catch(err => {
+          setButtonMsg('Comprar')
+        })
   }
   
   return (

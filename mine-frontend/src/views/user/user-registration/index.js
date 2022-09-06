@@ -47,7 +47,7 @@ export default function UserRegistration() {
         status: 'error',
         duration: 3000
       })
-      return;
+      throw Error('Invalid Form')
     }
     
     const { cid } = await ipfs.add(JSON.stringify(data))
@@ -62,7 +62,18 @@ export default function UserRegistration() {
         const url = `${ipfsPublicURL}/${cid}`
         return registerAsUser(url)
       })
-      .then(() =>  setButtonMsg('Registrado'))
+      .then(() =>  {
+        toast({
+          title: 'Transaccion completada',
+          description: "Ahora ya puedes comprar y vender bienes",
+          status: 'success',
+          duration: 3000
+        })
+        setButtonMsg('Registrado')
+      })
+      .catch(err => {
+        setButtonMsg('Registrarme')
+      })
   }
   const pdfToBase64 = (e) => {
       if (e.target.files.length > 0) {

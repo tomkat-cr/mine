@@ -8,12 +8,21 @@ import {
     TableCaption,
     TableContainer,
   } from '@chakra-ui/react'
+import { useEffect, useState } from 'react';
+import useMineFunctions from '../../../hooks/useMineFunctions';
 import CertifiersRow from '../certifiers-table-row';
 
 function CertifiersTable() {
+    const [certifiersAccepted, setCertifiersAccepted] = useState([]);
+    const [certifiersPending, setCertifiersPending] = useState([]);
+    const {getCertifiersAccepted, getCertifiersPending} = useMineFunctions();
 
-    const address = "0x38a2740Dc8d87039709b1B9983d2B2FeF4c825D0"
-    const filler = [address,address,address,address,address,address,address,address]
+    useEffect(() => {
+        getCertifiersAccepted().then(rs => setCertifiersAccepted(rs))
+    }, [getCertifiersAccepted])
+    useEffect(() => {
+        getCertifiersPending().then(rs => setCertifiersPending(rs))    
+    }, [getCertifiersPending])
 
     const Titles = () => (
         <Tr>
@@ -36,7 +45,8 @@ function CertifiersTable() {
                     <Titles/>
                 </Thead>
                 <Tbody>
-                    {filler.map(_address => <CertifiersRow key={_address} address={_address} />)}
+                    {certifiersPending.map(address => <CertifiersRow key={address} address={address} />)}
+                    {certifiersAccepted.map(address => <CertifiersRow key={address} address={address} />)}
                 </Tbody>
                 <Tfoot>
                     <Titles/>

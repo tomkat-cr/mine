@@ -47,7 +47,7 @@ export default function CertifierRegistration() {
         status: 'error',
         duration: 3000
       })
-      return;
+      throw Error("Invalid form")
     }
     
     const { cid } = await ipfs.add(JSON.stringify(data))
@@ -62,7 +62,17 @@ export default function CertifierRegistration() {
         const url = `${ipfsPublicURL}/${cid}`
         return registerAsCertifier(url)
       })
-      .then(() =>  setButtonMsg('Registrado'))
+      .then(() =>  {
+        toast({
+          title: 'Transaccion completada',
+          description: "Ahora debes esperar que el administrador te acepte",
+          status: 'success',
+          duration: 3000
+        })
+        setButtonMsg('Registrado')
+      }).catch(err => {
+        setButtonMsg('Registrarme')
+      })
   }
   const pdfToBase64 = (e) => {
       if (e.target.files.length > 0) {

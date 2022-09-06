@@ -168,6 +168,24 @@ const useMineFunctions = () => {
         }
     }, [mine, account, library?.utils, getFee])
 
+    const getLatestToken = useCallback(async () => {
+      if (mine) {
+          return await mine.methods.getCurrentTokenId().call()
+        }
+    }, [mine])
+
+    const getCertifiersAccepted = useCallback(async () => {
+      if (mine) {
+          return await mine.methods.getAllCertifiersAccounts().call()
+        }
+    }, [mine])
+    
+    const getCertifiersPending = useCallback(async () => {
+      if (mine) {
+          return await mine.methods.getAllUnCertifiersAccounts().call()
+        }
+    }, [mine])
+
   
     return {
       getFee,
@@ -189,7 +207,10 @@ const useMineFunctions = () => {
       getDataFromSeller,
       certifyProduct,
       isOwner,
-      buyProduct
+      buyProduct,
+      getLatestToken,
+      getCertifiersAccepted,
+      getCertifiersPending
     };
 };
 

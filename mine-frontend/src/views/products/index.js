@@ -8,12 +8,19 @@ import { Link } from "react-router-dom";
 function Products() {
     const [user, setUser] = useState(false);
     const [filter, setFilter] = useState({});
-    const { isUser } = useMineFunctions()
+    const { isUser, getLatestToken } = useMineFunctions()
     const [buttonActive, setButtonActive] = useState('all');
+    const [latest, setLatest] = useState([]);
 
     useEffect(() => {
         isUser().then(rs => setUser(rs))
     }, [isUser])
+
+
+    useEffect(() => {
+        getLatestToken().then(rs => setLatest([...Array(rs).keys()]))
+    }, [getLatestToken])
+
 
     const handleFilters = (f, keyword) => {
         setFilter(f)
@@ -33,8 +40,8 @@ function Products() {
                         : <Button onClick={() => handleFilters({isVerified: true}, 'verified')} color={'gray.600'} _focus={{ color: 'white', bg: 'blue.600', borderColor: 'blue.600'}}>Verificados</Button>
                     } 
                     {buttonActive === 'notverified' ?
-                        <Button onClick={() => handleFilters({isVerified: false}, 'notverified')} bg={'blue.400'} color={'white'} _focus={{ color: 'white', bg: 'blue.600', borderColor: 'blue.600'}}>No Verificados</Button>
-                        : <Button onClick={() => handleFilters({isVerified: false}, 'notverified')} color={'gray.600'} _focus={{ color: 'white', bg: 'blue.600', borderColor: 'blue.600'}}>No Verificados</Button>
+                        <Button onClick={() => handleFilters({isVerified: (false || undefined)}, 'notverified')} bg={'blue.400'} color={'white'} _focus={{ color: 'white', bg: 'blue.600', borderColor: 'blue.600'}}>No Verificados</Button>
+                        : <Button onClick={() => handleFilters({isVerified: (false || undefined)}, 'notverified')} color={'gray.600'} _focus={{ color: 'white', bg: 'blue.600', borderColor: 'blue.600'}}>No Verificados</Button>
                     } 
                     {buttonActive === 'carro' ?
                         <Button onClick={() => handleFilters({productType: "carro"}, 'carro')} bg={'blue.400'} color={'white'} _focus={{ color: 'white', bg: 'blue.600', borderColor: 'blue.600'}}>Carros</Button>
@@ -66,7 +73,7 @@ function Products() {
                 </InputGroup> */}
             </HStack>
             <Flex maxW={'100%'} wrap={'wrap'} alignItems='start'justifyContent={'center'} mb={4} gap='2'>
-                {[0,1,2].map((el, i) => <ProductAddToCart filter={filter} tokenId={i} key={i}/>)}
+                {latest.map((el, i) => <ProductAddToCart filter={filter} tokenId={i} key={i}/>)}
             </Flex>
             
         </Box>

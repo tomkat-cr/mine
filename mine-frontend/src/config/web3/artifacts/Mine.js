@@ -1,6 +1,6 @@
 export const MineArtifact = {
     "address": {
-        5: "0x5ecfe80995cf6fac793921d03fc2091aead73415"
+        5: "0x54d4E74d44C7cB1487cF2e3F697FEF98Cc648090"
     },
     "abi": [
 		{
@@ -424,6 +424,32 @@ export const MineArtifact = {
 			"type": "function"
 		},
 		{
+			"inputs": [],
+			"name": "getAllCertifiersAccounts",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "getAllUnCertifiersAccounts",
+			"outputs": [
+				{
+					"internalType": "address[]",
+					"name": "",
+					"type": "address[]"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
 			"inputs": [
 				{
 					"internalType": "uint256",
@@ -453,6 +479,19 @@ export const MineArtifact = {
 				}
 			],
 			"stateMutability": "pure",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "getCurrentTokenId",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
 			"type": "function"
 		},
 		{
