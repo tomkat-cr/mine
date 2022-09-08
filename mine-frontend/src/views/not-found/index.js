@@ -1,6 +1,34 @@
-import { Box, Heading, Text, Button } from '@chakra-ui/react';
+import { Box, Heading, Text, Button, Center, Spinner } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 
 function NotFound() {
+    const [loading, setLoading] = useState(true);
+
+
+    useEffect(() => {
+      const interval = setTimeout(() => setLoading(false), 3000)
+
+      return () => {
+        clearTimeout(interval);
+      }
+    }, []);
+
+    if (loading) {
+      return (
+        <Center minH={'calc(100vh - 130px)'}>
+          <Spinner
+            thickness='4px'
+            speed='0.65s'
+            emptyColor='gray.200'
+            color='blue.500'
+            size='xl'
+          />
+        </Center>
+      )
+    }
+
+
+
     return (
       <Box textAlign="center" py={10} minH={'calc(100vh - 130px)'} px={6}>
         <Heading
