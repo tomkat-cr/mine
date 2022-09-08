@@ -1,5 +1,5 @@
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { connector } from "../../config/web3";
 import useNetwork from "../useNetwork";
 import useTruncatedAddress from "../useTruncatedAddress";
@@ -9,7 +9,7 @@ const useWalletData = () => {
     const {activate, active, account, error, deactivate, chainId, library } = useWeb3React()
     const address = useTruncatedAddress(account)
     const network = useNetwork(chainId)
-    const unsupportedChain = error instanceof UnsupportedChainIdError
+    const unsupportedChain = useMemo(() => error instanceof UnsupportedChainIdError, [error]) 
 
     // Balance handling
     const getBalance = useCallback(async () => {
