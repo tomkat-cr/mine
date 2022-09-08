@@ -9,7 +9,7 @@ import {
   Icon,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import BlockChain from "../../../assets/hero-illustration/blockchain";
 import useMineFunctions from "../../../hooks/useMineFunctions";
@@ -116,20 +116,27 @@ export const Blob = props => {
 };
 
 
-const CallToActions = ({userType, active, isDisabledChain}) => {
-  if (!active || isDisabledChain) {
+const CallToActions = ({userType}) => {
+  const { connect, unsupportedChain, active } = useWalletData()
+
+  const connectWallet = useCallback(() => {
+    if (!active && !unsupportedChain) connect()
+  }, [connect, unsupportedChain, active])
+
+  if (!active || unsupportedChain) {
     return (
       <Button
         rounded={"full"}
         size={"lg"}
         fontWeight={"normal"}
+        onClick={connectWallet}
         px={6}
-        colorScheme={"gray"}
-        disabled={true}
-        isDisabled={true}
-        _hover={{ bg: "blue.500" }}
+        variant={unsupportedChain ? "ghost" : "outline"}
+        colorScheme={unsupportedChain ? "gray" : "green"}
+        disabled={unsupportedChain}
+        isDisabled={unsupportedChain}
       >
-        {isDisabledChain ? 'Red no soportada' : 'Conecta tu wallet'}
+       {unsupportedChain ? 'Red no soportada' : 'Conecta tu wallet'}
       </Button>
     )
   }
