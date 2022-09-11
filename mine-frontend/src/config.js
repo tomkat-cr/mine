@@ -1,1 +1,0 @@
-export const abiMineAddress="0x0CDb29c1FEC4033DCdB9D4085F158213c52e2784"

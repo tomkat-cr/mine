@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# File: scripts/mine_start_dev.sh
+# 2022-09-08 | CR
+#
+if [ -f ".env.local" ]; then
+    set -o allexport; . ".env.local" ; set +o allexport ;
+fi
+export REACT_APP_IPFS_PROJECT_ID=${IPFS_PROJECT_ID}
+export REACT_APP_IPFS_PROJECT_SECRET=${IPFS_PROJECT_SECRET}
+export REACT_APP_IPFS_HOST=${IPFS_HOST}
+export REACT_APP_IPFS_PORT=${IPFS_PORT}
+export REACT_APP_IPFS_PROTOCOL=${IPFS_PROTOCOL}
+export REACT_APP_IPFS_PUBLIC_URL=${IPFS_PUBLIC_URL}
+export REACT_APP_DEBUG=${DEBUG}
+export REACT_APP_SC_CONVERTER_GOERLI=${SC_CONVERTER_GOERLI}
+export REACT_APP_SC_CONVERTER_ETHEREUM=${SC_CONVERTER_ETHEREUM}
+export REACT_APP_SC_MINE_GOERLI=${SC_MINE_GOERLI}
+export REACT_APP_SC_MINE_ETHEREUM=${SC_MINE_ETHEREUM}
+npm run build
+npm start
