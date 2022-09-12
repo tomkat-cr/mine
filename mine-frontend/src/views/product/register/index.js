@@ -31,6 +31,7 @@ import {
   NumberInputStepper,
   Divider,
   HStack,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import {ipfs, ipfsPublicURL} from "../../../config/ipfs";
@@ -38,6 +39,7 @@ import useMineFunctions from "../../../hooks/useMineFunctions";
 
 import useConverter from "../../../hooks/useConverter";
 import { useWeb3React } from "@web3-react/core";
+import axios from "axios";
 
 export default function ProductRegistration() {
   const {library} = useWeb3React()
@@ -57,6 +59,8 @@ export default function ProductRegistration() {
   const format = (val) => `$` + val.toString()
   const [ethPrice, setEthPrice] = useState(1);
   const {getETHPrice} = useConverter()
+  const [copPrice, setCopPrice] = useState(0);
+  const [currency, setCurrency] = useState("USD");
 
   useEffect(() => {
       getETHPrice().then(rs => setEthPrice(rs / 1e8))
@@ -76,6 +80,11 @@ export default function ProductRegistration() {
   useEffect(() => {
     getFee(2).then(_fee => setFee(_fee)).catch(err => setFee(0))
   }, [getFee])
+
+  useEffect(() => {
+    axios.get("https://www.datos.gov.co/api/id/32sa-8pi3.json?$query=select%20*%2C%20%3Aid%20order%20by%20%60vigenciadesde%60%20desc%20limit%201")
+    .then(rs => setCopPrice(parseFloat(rs.data[0].valor)))
+  }, [])
 
   const saveProductData = useCallback(async () => {
     const data = {
@@ -110,7 +119,13 @@ export default function ProductRegistration() {
         if (!cid) return;
         setButtonMsg('Registrando producto...')
         const url = `${ipfsPublicURL}/${cid}`
-        return registerProduct(url, library.utils.toWei((price / ethPrice).toString()))
+
+        if (currency === "USD") {
+          return registerProduct(url, library.utils.toWei((price / ethPrice).toString()))
+        }
+        
+        // COP
+        return registerProduct(url, library.utils.toWei(((price / copPrice) / ethPrice).toString()))
       })
       .then(() =>  {
         toast({
@@ -160,7 +175,7 @@ export default function ProductRegistration() {
         <Stack align={"center"}>
           <Heading fontSize={"4xl"}>Registra un bien</Heading>
           <Text fontSize={"md"} textAlign={"center"} color={"gray.600"}>
-            Verifica bien la información antes de subirla 
+            Verifica bien la información antes de subirla
           </Text>
         </Stack>
         <Box
@@ -209,7 +224,18 @@ export default function ProductRegistration() {
             </FormControl>
 
             <FormControl id="caracteristicas">
-              <FormLabel>Precio (USD)</FormLabel>
+              <FormLabel>Precio
+              <ButtonGroup ml={2} size='xs' isAttached variant='outline'>
+                <Button 
+                  variant={currency === "USD" ? "solid" : "outline"}
+                  colorScheme={currency === "USD" ? "blue" : "blackAlpha"} 
+                  onClick={() => setCurrency("USD")} >USD</Button>
+                <Button 
+                  variant={currency === "COP" ? "solid" : "outline"}
+                  colorScheme={currency === "COP" ? "blue" : "blackAlpha"} 
+                  onClick={() => setCurrency("COP")} >COP</Button>
+              </ButtonGroup>
+              </FormLabel>
               <NumberInput min={0}
                 onChange={(valueString) => setPrice(valueString)}
                 value={format(price)}
@@ -276,7 +302,9 @@ export default function ProductRegistration() {
                         </Badge>
                       </Text>
                       <Text>
-                        {(price / ethPrice).toFixed(4)} ETH
+                        {currency === "USD" ?
+                          (price / ethPrice).toFixed(4)
+                          : ((price / copPrice) / ethPrice).toFixed(4)} ETH
                       </Text>
                   </HStack>
                 </Box>
