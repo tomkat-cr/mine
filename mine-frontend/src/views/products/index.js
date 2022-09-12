@@ -18,7 +18,7 @@ function Products() {
 
 
     useEffect(() => {
-        getLatestToken().then(rs => setLatest([...Array(rs).keys()]))
+        getLatestToken().then(rs => setLatest([...Array(parseInt(rs)).keys()]))
     }, [getLatestToken])
 
 
