@@ -1,5 +1,6 @@
 import { Box, Heading, Text, Button, Center, Spinner } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function NotFound() {
     const [loading, setLoading] = useState(true);
@@ -50,6 +51,8 @@ function NotFound() {
           colorScheme="blue"
           bgGradient="linear(to-r, blue.400, blue.500, blue.600)"
           color="white"
+          as={Link}
+          to={"/"}
           variant="solid">
           Vuelve al inicio
         </Button>
