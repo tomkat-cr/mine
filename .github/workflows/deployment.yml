@@ -33,6 +33,18 @@ jobs:
           npm run deploy
       - name: frontend npm ci, build
         working-directory: ./mine-frontend
+        env:
+          REACT_APP_IPFS_PROJECT_ID: ${{ secrets.REACT_APP_IPFS_PROJECT_ID }}
+          REACT_APP_IPFS_PROJECT_SECRET: ${{ secrets.REACT_APP_IPFS_PROJECT_SECRET }}
+          REACT_APP_IPFS_HOST: ${{ secrets.REACT_APP_IPFS_HOST }}
+          REACT_APP_IPFS_PORT: ${{ secrets.REACT_APP_IPFS_PORT }}
+          REACT_APP_IPFS_PROTOCOL: ${{ secrets.REACT_APP_IPFS_PROTOCOL }}
+          REACT_APP_IPFS_PUBLIC_URL: ${{ secrets.REACT_APP_IPFS_PUBLIC_URL }}
+          REACT_APP_DEBUG: ${{ secrets.REACT_APP_DEBUG }}
+          REACT_APP_SC_CONVERTER_GOERLI: ${{ secrets.REACT_APP_SC_CONVERTER_GOERLI }}
+          REACT_APP_SC_CONVERTER_ETHEREUM: ${{ secrets.REACT_APP_SC_CONVERTER_ETHEREUM }}
+          REACT_APP_SC_MINE_GOERLI: ${{ secrets.REACT_APP_SC_MINE_GOERLI }}
+          REACT_APP_SC_MINE_ETHEREUM: ${{ secrets.REACT_APP_SC_MINE_ETHEREUM }}
         run: |
           npm install
           npm run build --if-present
