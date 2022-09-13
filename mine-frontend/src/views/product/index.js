@@ -259,7 +259,7 @@ function Product() {
               mt={8}
               size={"lg"}
               py={"7"}
-              onClick={() => userIsUser ? disclosure.open() : navigate('/user')}
+              onClick={() => userIsUser ? disclosure.onOpen() : navigate('/user')}
               disabled={userisOwner}
               isDisabled={userisOwner}
               colorScheme={"blue"}
