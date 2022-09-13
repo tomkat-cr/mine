@@ -36,6 +36,7 @@ import { FaEthereum } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { ipfs, ipfsPublicURL } from "../../config/ipfs";
 import useMineFunctions from "../../hooks/useMineFunctions";
+import { useNavigate } from 'react-router-dom';
 
 const openFileBase64 = base64String => {
   let pdfWindow = window.open("");
@@ -52,7 +53,9 @@ function Product() {
   const [user, setUser] = useState();
   const { tokenId } = useParams();
   const [userIsCertifier, setUserIsCertifier] = useState(false);
-  const { getProduct, getDataFromSeller, isCertifier, isOwner } = useMineFunctions();
+  const [userIsUser, setUserIsUser] = useState(false);
+  const { getProduct, getDataFromSeller, isCertifier, isOwner, isUser } = useMineFunctions();
+  const navigate = useNavigate();
 
   useEffect(() => {
     getProduct(tokenId).then(rs => setProduct(rs));
@@ -69,6 +72,10 @@ function Product() {
   useEffect(() => {
     isCertifier().then(rs => setUserIsCertifier(rs));
   }, [isCertifier, tokenId]);
+
+  useEffect(() => {
+    isUser().then(rs => setUserIsUser(rs));
+  }, [tokenId, isUser]);
 
   if (
     product === undefined ||
@@ -252,7 +259,7 @@ function Product() {
               mt={8}
               size={"lg"}
               py={"7"}
-              onClick={disclosure.onOpen}
+              onClick={() => userIsUser ? disclosure.open() : navigate('/user')}
               disabled={userisOwner}
               isDisabled={userisOwner}
               colorScheme={"blue"}
@@ -262,7 +269,7 @@ function Product() {
                 boxShadow: "lg",
               }}
             >
-              Comprar
+              { (userIsUser ? "Comprar" : (userisOwner ? "Compra Inhabilitada" : "Registrate para poder Comprar")) }
             </Button>
           )}
 
