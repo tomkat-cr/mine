@@ -104,6 +104,7 @@ function App() {
         <Route path="/bienes" element={<Products/>}/>
         <Route path="/certifier" element={<CertifierRegistration/>}/>
         <Route path="/user" element={<UserRegistration/>}/>
+        <Route path="/product/:tokenId" element={<Product/>}/>
         <Route path="/" element={<Home/>}/>
         <Route path="*" element={<NotFound/>}/>
       </Routes>
