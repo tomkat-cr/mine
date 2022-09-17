@@ -32,11 +32,13 @@ import {
 } from "@chakra-ui/react";
 import { useWeb3React } from "@web3-react/core";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FaEthereum } from "react-icons/fa";
+import { FaDollarSign, FaEthereum } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { ipfs, ipfsPublicURL } from "../../config/ipfs";
 import useMineFunctions from "../../hooks/useMineFunctions";
 import { useNavigate } from 'react-router-dom';
+import useTRM from "../../hooks/useTRM";
+import useConverter from "../../hooks/useConverter";
 
 const openFileBase64 = base64String => {
   let pdfWindow = window.open("");
@@ -57,6 +59,13 @@ function Product() {
   const { getProduct, getDataFromSeller, isCertifier, isOwner, isUser } = useMineFunctions();
   const navigate = useNavigate();
 
+  const {getETHPrice} = useConverter()
+  const {getCopExchange} = useTRM()
+  const [copExchange, setCopExchange] = useState(0);
+  const [ethPrice, setEthPrice] = useState(0);
+  const [copPrice, setCopPrice] = useState(0);
+  const [usdPrice, setUsdPrice] = useState(0);
+
   useEffect(() => {
     getProduct(tokenId).then(rs => setProduct(rs));
   }, [getProduct, tokenId]);
@@ -76,6 +85,24 @@ function Product() {
   useEffect(() => {
     isUser().then(rs => setUserIsUser(rs));
   }, [tokenId, isUser]);
+
+  useEffect(() => {
+    getETHPrice().then(rs => setEthPrice(rs / 1e8))
+  }, [getETHPrice])
+
+  useEffect(() => {
+    getCopExchange().then(exchange => setCopExchange(exchange))
+  }, [getCopExchange])
+
+  useEffect(() => {
+    if(product && typeof product.price !== 'undefined') {
+      setUsdPrice((parseFloat(product.price) * parseFloat(ethPrice)).toFixed(4));
+    }
+  }, [product, ethPrice])
+
+  useEffect(() => {
+      setCopPrice((parseFloat(usdPrice) * parseFloat(copExchange)).toFixed(2));
+  }, [copExchange, usdPrice])
 
   if (
     product === undefined ||
@@ -113,7 +140,9 @@ function Product() {
               {product.name}
             </Heading>
             <Text color={"gray.900"} fontWeight={300} fontSize={"2xl"}>
-              <Icon as={FaEthereum} boxSize={4} /> {parseFloat(product.price).toFixed(4)}
+              <Icon as={FaEthereum} boxSize={4} /> {parseFloat(product.price).toFixed(4)}&nbsp;|&nbsp; 
+              <Icon as={FaDollarSign} boxSize={4} /> {(usdPrice*1).toLocaleString(undefined, {maximumFractionDigits:2})}&nbsp;|&nbsp; 
+              <Badge ml={0} colorScheme={"white"} fontSize={"sm"}>COP</Badge> {(copPrice*1).toLocaleString(undefined, {maximumFractionDigits:2})}<br/>
               {product.isVerified && (
                 <Badge ml={2} colorScheme={"green"} fontSize={"sm"}>
                   Verificado

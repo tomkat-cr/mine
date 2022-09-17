@@ -1,17 +1,24 @@
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { connector } from "../../config/web3";
+
 import useNetwork from "../useNetwork";
 import useTruncatedAddress from "../useTruncatedAddress";
+import { resetContractGeneral } from "../useContractGeneral";
 
 const useWalletData = () => {
     const [balance, setBalance] = useState(0)
     const {activate, active, account, error, deactivate, chainId, library } = useWeb3React()
     const address = useTruncatedAddress(account)
     const network = useNetwork(chainId)
-    const unsupportedChain = useMemo(() => error instanceof UnsupportedChainIdError, [error]) 
+
+    const unsupportedChain = useMemo(() => {
+        let response = error instanceof UnsupportedChainIdError
+        return response;
+    }, [error]);
 
     // Balance handling
+
     const getBalance = useCallback(async () => {
         const weiBalance = await library.eth.getBalance(account)
         setBalance((weiBalance/1e18).toFixed(2))
@@ -22,7 +29,9 @@ const useWalletData = () => {
     }, [active, getBalance])
 
     // Connection handling
+
     const connect = useCallback(() => {
+        resetContractGeneral();
         activate(connector)
         localStorage.setItem("prevConn", "true")
     }, [activate])

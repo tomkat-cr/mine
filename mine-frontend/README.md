@@ -1,5 +1,23 @@
 # MINE Frontend
 
+Mine is a MarketPlace of NFT of property titles of physical personal property (vehicles, motorcycles, boats, among others).
+
+Features:
+
+There will be a public display of the goods.
+The Goods will be displayed by categories.
+The currency to display the prices of the Goods will be US Dollars and the official exchange currency will be ETH.
+
+Users (buyers, sellers, observers) must connect their Wallet to:
+
+- Check in.
+- Login.
+- Register new Goods for sale.
+- Carry out payment transactions.
+- View the public display of goods.
+
+## Prerequisites
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

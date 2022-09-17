@@ -1,18 +1,16 @@
 import { useCallback, useMemo } from "react";
-import { useWeb3React } from "@web3-react/core";
-import { Converter } from "../../config/web3/artifacts/Converter";
-
-const { address, abi } = Converter;
+import { useContractGeneral } from "../useContractGeneral";
 
 const useConverter = () => {
-  const { active, library, chainId } = useWeb3React();
-
+  const { contract } = useContractGeneral('Converter');
   const converter = useMemo(() => {
-    if (active) return new library.eth.Contract(abi, address[chainId]);
-  }, [active, chainId, library?.eth?.Contract]);
+    return contract;
+  }, [contract]);
 
   const getETHPrice = useCallback(async () => {
-    return await converter.methods.getLatestPrice().call()
+    if(converter) {
+      return await converter.methods.getLatestPrice().call()
+    }
   }, [converter])
 
   return {converter, getETHPrice};

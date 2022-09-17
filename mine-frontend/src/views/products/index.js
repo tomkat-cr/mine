@@ -1,9 +1,10 @@
 // import { Search2Icon } from "@chakra-ui/icons";
 import { Box, Flex, HStack, Button, ButtonGroup } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import ProductAddToCart from "../../layouts/internal/card";
 import useMineFunctions from "../../hooks/useMineFunctions";
 import { Link } from "react-router-dom";
+import useWalletData from "../../hooks/useWalletData";
 
 function Products() {
     const [user, setUser] = useState(false);
@@ -11,22 +12,48 @@ function Products() {
     const { isUser, getLatestToken } = useMineFunctions()
     const [buttonActive, setButtonActive] = useState('all');
     const [latest, setLatest] = useState([]);
+    const { network, connect, active, unsupportedChain } = useWalletData();
 
     useEffect(() => {
         isUser().then(rs => setUser(rs))
     }, [isUser])
 
-
     useEffect(() => {
-        getLatestToken().then(rs => setLatest([...Array(parseInt(rs)).keys()]))
+        getLatestToken().then(rs => {
+            if (!rs) {
+                return null;
+            }
+            return setLatest([...Array(parseInt(rs)).keys()])
+        })
     }, [getLatestToken])
-
 
     const handleFilters = (f, keyword) => {
         setFilter(f)
         setButtonActive(keyword)
     }
 
+    const connectWallet = useCallback(() => {
+        if (!active || !unsupportedChain) connect()
+    }, [connect, unsupportedChain, active])
+    
+    if (!active || unsupportedChain) {
+        return (
+            <HStack spacing={3} justifyContent={'center'} px={3} py={2} borderBottom={'1px'} borderColor={'gray.200'}>
+                <Button
+                    rounded={"full"}
+                    size={"lg"}
+                    fontWeight={"normal"}
+                    onClick={connectWallet}
+                    px={6}
+                    variant={unsupportedChain ? "ghost" : "outline"}
+                    colorScheme={unsupportedChain ? "gray" : "green"}
+                >
+                    {unsupportedChain ? 'Red '+ network +' no soportada' : 'Conecta tu wallet'}
+                </Button>
+            </HStack>
+        )
+    }
+    
     return (
         <Box minH={'100vh'} >
             <HStack spacing={3} justifyContent={'center'} px={3} py={2} borderBottom={'1px'} borderColor={'gray.200'}>

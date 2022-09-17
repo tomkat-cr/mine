@@ -11,7 +11,7 @@ This solution is based on Web 3.0 technologies, through the creation of a DApp d
 ### Front-end
 
 - ReactJs
-- Web3.js (Wallet connection)
+- Web3.js (wallet connection)
 - Chakra-UI (layout)
 - Mocha (testing)
 - HTML
@@ -30,15 +30,14 @@ This solution is based on Web 3.0 technologies, through the creation of a DApp d
 
 ### Integrations
 
-- Wallet + Authentication (Ethereum provider): Metamask
-- IPFS: Information
-- Testnet: Goerli
-- Faucet: Goerli PoW Faucet
+- Metamask (wallet + authentication + Ethereum provider)
+- IPFS / Infura (data persistence/storage)
+- Goerli: (testnet)
+- [Goerli PoW Faucet](https://goerli-faucet.pk910.de/) (faucet)
 
 ### Live Demo
 
-- https://bit.ly/minegof
-
+- 🔗 https://mine.on.fleek.co/
 
 ## Developer Team
 
@@ -90,14 +89,14 @@ Esta solución está basada en tecnologías de la Web 3.0, mediante la creación
 
 ### Integraciones
 
-- Wallet + Autenticación (Ethereum provider): Metamask
-- IPFS: Infura
-- Testnet: Goerli
-- Faucet: Goerli PoW Faucet
+- Metamask (Wallet + autenticación + Ethereum provider)
+- IPFS / Infura (persistencia de datos)
+- Goerli (testnet)
+- [Goerli PoW Faucet](https://goerli-faucet.pk910.de/) (faucet)
 
 ### Live Demo
 
-- 🔗 https://bit.ly/minegof 
+- 🔗 https://mine.on.fleek.co/
 
 
 ## Equipo Desarrollador

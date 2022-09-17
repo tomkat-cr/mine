@@ -14,7 +14,7 @@ export const FEE_TYPES = [
 ]
 
 const useMineFunctions = () => {
-    const {account, library } = useWeb3React()
+    const { account, library } = useWeb3React()
     const mine = useMine()
 
     const getFee = useCallback(async (feeNumber) => {

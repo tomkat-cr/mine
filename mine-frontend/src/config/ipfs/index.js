@@ -1,5 +1,6 @@
 import * as ipfsClient from 'ipfs-http-client'
 import { Buffer } from 'buffer'
+import { genDebug } from '../../config';
 
 const auth =
     'Basic ' + Buffer.from(
@@ -15,7 +16,7 @@ export const ipfs = ipfsClient.create({
     }
 })
 
-if (process.env.REACT_APP_DEBUG === '1') {
+if (genDebug) {
     console.log('>>--> REACT_APP_SC_CONVERTER_GOERLI', process.env.REACT_APP_SC_CONVERTER_GOERLI)
     console.log('>>--> REACT_APP_SC_CONVERTER_ETHEREUM', process.env.REACT_APP_SC_CONVERTER_ETHEREUM)
     console.log('>>--> REACT_APP_SC_MINE_GOERLI', process.env.REACT_APP_SC_MINE_GOERLI)

@@ -39,7 +39,8 @@ import useMineFunctions from "../../../hooks/useMineFunctions";
 
 import useConverter from "../../../hooks/useConverter";
 import { useWeb3React } from "@web3-react/core";
-import axios from "axios";
+import useTRM from "../../../hooks/useTRM";
+// import axios from "axios";
 
 export default function ProductRegistration() {
   const {library} = useWeb3React()
@@ -59,6 +60,7 @@ export default function ProductRegistration() {
   const format = (val) => `$` + val.toString()
   const [ethPrice, setEthPrice] = useState(1);
   const {getETHPrice} = useConverter()
+  const {getCopExchange} = useTRM()
   const [copPrice, setCopPrice] = useState(0);
   const [currency, setCurrency] = useState("USD");
 
@@ -76,15 +78,15 @@ export default function ProductRegistration() {
     setCaracteristicas(caracteristicas.filter(c => c['key'] !== key))
   }
 
-
   useEffect(() => {
     getFee(2).then(_fee => setFee(_fee)).catch(err => setFee(0))
   }, [getFee])
 
   useEffect(() => {
-    axios.get("https://www.datos.gov.co/api/id/32sa-8pi3.json?$query=select%20*%2C%20%3Aid%20order%20by%20%60vigenciadesde%60%20desc%20limit%201")
-    .then(rs => setCopPrice(parseFloat(rs.data[0].valor)))
-  }, [])
+    // axios.get("https://www.datos.gov.co/api/id/32sa-8pi3.json?$query=select%20*%2C%20%3Aid%20order%20by%20%60vigenciadesde%60%20desc%20limit%201")
+    // .then(rs => setCopPrice(parseFloat(rs.data[0].valor)))
+    getCopExchange().then(exchange => setCopPrice(exchange))
+  }, [getCopExchange])
 
   const saveProductData = useCallback(async () => {
     const data = {
@@ -161,7 +163,7 @@ export default function ProductRegistration() {
     } else {
       setPhoto("")
     }
-}
+  }
 
   return (
     <Flex
@@ -306,6 +308,12 @@ export default function ProductRegistration() {
                           (price / ethPrice).toFixed(4)
                           : ((price / copPrice) / ethPrice).toFixed(4)} ETH
                       </Text>
+                  </HStack>
+                  <HStack my={10} alignItems={'center'} justifyContent={'space-around'}>
+                    <Text>
+                      Cotización ETH: {ethPrice} USD/ETH<br/>
+                      Cotización COP: {(parseFloat(copPrice) * 1).toFixed(2)} COP/USD<br/>
+                    </Text>
                   </HStack>
                 </Box>
 
